@@ -8,15 +8,29 @@ import { statusLabels } from "@/lib/rights-data";
 import type { RightsAnswer } from "@/lib/types";
 
 const steps = ["Je vraag", "Relevante context", "Controle", "Uitkomst"];
-const contextOptions = ["Vrijwillige behandeling", "Informatie gedeeld", "Ouder of vertegenwoordiger betrokken"];
+const situationOptions = [
+  "Algemeen of nog onbekend",
+  "Cliënt of patiënt",
+  "Werknemer of werkzoekende",
+  "Huurder of woningzoekende",
+  "Ouder, voogd of familielid",
+  "Slachtoffer of betrokkene",
+  "Burger bij overheid of politie",
+  "Professional of organisatie",
+];
+const contextOptions = [
+  "Er is een besluit of contract",
+  "Er is informatie gedeeld",
+  "Er loopt een termijn",
+];
 
 export default function QuestionPage() {
   const [step, setStep] = useState(0);
-  const [question, setQuestion] = useState("Mijn psycholoog heeft zonder mijn toestemming informatie met mijn ouders gedeeld. Mag dat?");
-  const [situation, setSituation] = useState("Cliënt in de GGZ");
-  const [ageGroup, setAgeGroup] = useState("18 jaar of ouder");
-  const [pronouns, setPronouns] = useState("zij/haar");
-  const [tags, setTags] = useState<string[]>(["Vrijwillige behandeling", "Informatie gedeeld"]);
+  const [question, setQuestion] = useState("");
+  const [situation, setSituation] = useState("Algemeen of nog onbekend");
+  const [ageGroup, setAgeGroup] = useState("");
+  const [pronouns, setPronouns] = useState("Nog niet delen");
+  const [tags, setTags] = useState<string[]>([]);
   const [answer, setAnswer] = useState<RightsAnswer | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -85,8 +99,8 @@ export default function QuestionPage() {
                   <h2>Wat wil je weten?</h2>
                   <p>Beschrijf één gebeurtenis in je eigen woorden. Een paar zinnen is genoeg.</p>
                   <label htmlFor="guided-question">Jouw situatie</label>
-                  <textarea id="guided-question" value={question} onChange={(event) => setQuestion(event.target.value)} minLength={10} maxLength={2500} required />
-                  <div className="example-line"><span>Bijvoorbeeld</span> “Mijn verhuurder reageert niet op ernstige schimmel.”</div>
+                  <textarea id="guided-question" value={question} onChange={(event) => setQuestion(event.target.value)} placeholder="Beschrijf wat er gebeurde en wat je wilt weten." minLength={10} maxLength={2500} required />
+                  <div className="example-line"><span>Dit kan gaan over</span> wonen, werk, zorg, familie, veiligheid of de overheid.</div>
                 </div>
               )}
 
@@ -96,11 +110,11 @@ export default function QuestionPage() {
                   <h2>Wat is relevant voor je vraag?</h2>
                   <p>Je mag een vraag overslaan. Minder delen kan betekenen dat de uitkomst voorzichtiger wordt.</p>
                   <div className="flow-fields">
-                    <label><span>Jouw rol of situatie</span><select value={situation} onChange={(event) => setSituation(event.target.value)}><option>Cliënt in de GGZ</option><option>Patiënt in algemene zorg</option><option>Cliënt in jeugdhulp</option><option>Anders of nog onbekend</option></select></label>
+                    <label><span>Jouw rol of situatie</span><select value={situation} onChange={(event) => setSituation(event.target.value)}>{situationOptions.map((option) => <option key={option}>{option}</option>)}</select></label>
                     <label><span>Leeftijdsgroep</span><select value={ageGroup} onChange={(event) => setAgeGroup(event.target.value)}><option value="">Nog niet delen</option><option>Jonger dan 12 jaar</option><option>12 tot en met 15 jaar</option><option>16 of 17 jaar</option><option>18 jaar of ouder</option></select></label>
                   </div>
                   <fieldset className="choice-grid"><legend>Welke omschrijvingen passen?</legend>{contextOptions.map((tag) => <button key={tag} type="button" className={tags.includes(tag) ? "choice-card selected" : "choice-card"} aria-pressed={tags.includes(tag)} onClick={() => toggleTag(tag)}><span className="choice-check">{tags.includes(tag) && <Check size={14} />}</span>{tag}</button>)}</fieldset>
-                  <div className="pronoun-field"><label htmlFor="pronouns">Hoe spreken we je aan?</label><select id="pronouns" value={pronouns} onChange={(event) => setPronouns(event.target.value)}><option>zij/haar</option><option>hij/hem</option><option>die/diens</option><option>hen/hun</option><option>naam gebruiken</option></select><small>Dit verandert alleen de aanspreekvorm, nooit de juridische uitkomst.</small></div>
+                  <div className="pronoun-field"><label htmlFor="pronouns">Hoe spreken we je aan?</label><select id="pronouns" value={pronouns} onChange={(event) => setPronouns(event.target.value)}><option>Nog niet delen</option><option>zij/haar</option><option>hij/hem</option><option>die/diens</option><option>hen/hun</option><option>naam gebruiken</option></select><small>Dit verandert alleen de aanspreekvorm, nooit de juridische uitkomst.</small></div>
                 </div>
               )}
 
@@ -138,7 +152,7 @@ export default function QuestionPage() {
               </div>
               <div className="result-sources"><strong>Gebruikte officiële bronnen</strong>{answer.sources.map((source) => <a key={source.url} href={source.url} target="_blank" rel="noreferrer">{source.title}<ExternalLink size={13} /></a>)}</div>
               {answer.warning && <p className="answer-warning"><CircleAlert size={17} />{answer.warning}</p>}
-              <div className="result-actions"><Link className="flow-next" href="/mijn-rechten">Open mijn rechtenoverzicht <ArrowRight size={17} /></Link><button className="back-button" type="button" onClick={restart}><RotateCcw size={16} /> Nieuwe vraag</button></div>
+              <div className="result-actions"><Link className="flow-next" href="/rechten">Bekijk alle openbare rechten <ArrowRight size={17} /></Link><button className="back-button" type="button" onClick={restart}><RotateCcw size={16} /> Nieuwe vraag</button></div>
             </div>
           )}
         </section>

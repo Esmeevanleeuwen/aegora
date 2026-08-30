@@ -26,11 +26,21 @@ import { SiteHeader } from "@/components/site-header";
 import { domains, rightsCatalog, statusLabels } from "@/lib/rights-data";
 import type { Domain, RightsAnswer, RightItem } from "@/lib/types";
 
+const situationOptions = [
+  "Algemeen of nog onbekend",
+  "Cliënt of patiënt",
+  "Werknemer of werkzoekende",
+  "Huurder of woningzoekende",
+  "Ouder, voogd of familielid",
+  "Slachtoffer of betrokkene",
+  "Burger bij overheid of politie",
+  "Professional of organisatie",
+];
+
 const contextOptions = [
-  "Cliënt in de GGZ",
-  "Vrijwillige behandeling",
-  "Informatie gedeeld",
-  "Ouder of vertegenwoordiger betrokken",
+  "Er is een besluit of contract",
+  "Er is informatie gedeeld",
+  "Er loopt een termijn",
 ];
 
 const iconByDomain: Record<Domain, typeof HeartPulse> = {
@@ -135,19 +145,19 @@ function AnswerPanel({ answer }: { answer: RightsAnswer }) {
 }
 
 export default function HomePage() {
-  const [question, setQuestion] = useState(
-    "Mijn psycholoog heeft zonder mijn toestemming informatie met mijn ouders gedeeld. Mag dat?",
-  );
-  const [situation, setSituation] = useState("Cliënt in de GGZ");
-  const [ageGroup, setAgeGroup] = useState("18 jaar of ouder");
-  const [pronouns, setPronouns] = useState("zij/haar");
-  const [tags, setTags] = useState<string[]>(["Vrijwillige behandeling", "Informatie gedeeld"]);
-  const [selectedDomain, setSelectedDomain] = useState<Domain>("Zorg & cliënt");
+  const [question, setQuestion] = useState("");
+  const [situation, setSituation] = useState("Algemeen of nog onbekend");
+  const [ageGroup, setAgeGroup] = useState("");
+  const [pronouns, setPronouns] = useState("Nog niet delen");
+  const [tags, setTags] = useState<string[]>([]);
+  const [selectedDomain, setSelectedDomain] = useState<Domain | null>(null);
   const [answer, setAnswer] = useState<RightsAnswer | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const visibleRights = rightsCatalog.filter((right) => right.domain === selectedDomain);
+  const visibleRights = selectedDomain
+    ? rightsCatalog.filter((right) => right.domain === selectedDomain)
+    : [];
 
   function toggleTag(tag: string) {
     setTags((current) =>
@@ -193,14 +203,14 @@ export default function HomePage() {
       <section className="hero" id="start">
         <div className="hero-copy">
           <span className="eyebrow"><span className="live-dot" /> Actuele officiële bronnen</span>
-          <h1>Weet wat er<br />voor <em>jou</em> geldt.</h1>
+          <h1>Weet waar je<br /><em>recht</em> op hebt.</h1>
           <p>
-            Je rechten, uitzonderingen en volgende stap — uitgelegd vanuit jouw situatie,
-            zonder dat je eerst het juiste loket of wetsartikel hoeft te kennen.
+            Algemene rechten voor iedereen, duidelijk uitgelegd per onderwerp, rol en situatie.
+            Zonder dat je eerst het juiste loket of wetsartikel hoeft te kennen.
           </p>
           <div className="trust-row">
             <span><Shield size={18} /> Bron vóór antwoord</span>
-            <span><LockKeyhole size={18} /> Jij kiest je context</span>
+            <span><LockKeyhole size={18} /> Zonder account beginnen</span>
           </div>
         </div>
 
@@ -217,6 +227,7 @@ export default function HomePage() {
             id="question"
             value={question}
             onChange={(event) => setQuestion(event.target.value)}
+            placeholder="Bijvoorbeeld: mijn verhuurder herstelt een ernstig gebrek niet. Wat kan ik doen?"
             minLength={10}
             maxLength={2500}
             required
@@ -224,12 +235,9 @@ export default function HomePage() {
 
           <div className="context-fields">
             <label>
-              <span>Situatie</span>
+              <span>Rol of situatie</span>
               <select value={situation} onChange={(event) => setSituation(event.target.value)}>
-                <option>Cliënt in de GGZ</option>
-                <option>Patiënt in algemene zorg</option>
-                <option>Cliënt in jeugdhulp</option>
-                <option>Anders of nog onbekend</option>
+                {situationOptions.map((option) => <option key={option}>{option}</option>)}
               </select>
             </label>
             <label>
@@ -245,6 +253,7 @@ export default function HomePage() {
             <label>
               <span>Aanspreekvorm</span>
               <select value={pronouns} onChange={(event) => setPronouns(event.target.value)}>
+                <option>Nog niet delen</option>
                 <option>zij/haar</option>
                 <option>hij/hem</option>
                 <option>die/diens</option>
@@ -256,7 +265,7 @@ export default function HomePage() {
 
           <fieldset className="context-chips">
             <legend>Extra context — alleen als het je antwoord kan veranderen</legend>
-            {contextOptions.slice(1).map((tag) => (
+            {contextOptions.map((tag) => (
               <button
                 className={tags.includes(tag) ? "chip selected" : "chip"}
                 type="button"
@@ -284,12 +293,12 @@ export default function HomePage() {
       <section className="rights-section" id="rechten">
         <div className="section-heading">
           <div>
-            <span className="eyebrow">Persoonlijke rechtenkaart</span>
-            <h2>Niet alleen wat er staat.<br />Ook wat je ermee kunt.</h2>
+            <span className="eyebrow">Rechten per onderwerp</span>
+            <h2>Voor iedere situatie<br />een duidelijk startpunt.</h2>
           </div>
           <p>
-            Ieder recht toont de voorwaarden, uitzonderingen, actuele bron en een concrete
-            vervolgstap. De eerste gecontroleerde bronset richt zich op zorg en cliëntrechten.
+            Kies een onderwerp. Je ziet algemene rechten, voorwaarden, uitzonderingen,
+            officiële bronnen en een mogelijke volgende stap. Een account is niet nodig.
           </p>
         </div>
 
@@ -316,11 +325,11 @@ export default function HomePage() {
           })}
         </div>
 
-        {visibleRights.length > 0 ? (
+        {selectedDomain && visibleRights.length > 0 ? (
           <div className="rights-grid">
             {visibleRights.map((right) => <RightCard right={right} key={right.id} />)}
           </div>
-        ) : (
+        ) : selectedDomain ? (
           <div className="empty-domain">
             <FileText size={28} />
             <div>
@@ -328,7 +337,7 @@ export default function HomePage() {
               <p>Een rechtsgebied gaat pas live als kaarten, uitzonderingen en bronnen samen zijn gevalideerd.</p>
             </div>
           </div>
-        )}
+        ) : null}
       </section>
 
       <section className="method-section" id="werking">

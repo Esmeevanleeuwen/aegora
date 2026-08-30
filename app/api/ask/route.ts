@@ -2,7 +2,7 @@ import { generateText, Output } from "ai";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { rightsCatalog } from "@/lib/rights-data";
-import type { ApplicabilityStatus, RightsAnswer, RightItem } from "@/lib/types";
+import type { ApplicabilityStatus, Domain, RightsAnswer, RightItem } from "@/lib/types";
 
 export const runtime = "nodejs";
 
@@ -59,6 +59,49 @@ function scoreRight(question: string, right: RightItem) {
       "fout",
       "niet gehoord",
     ],
+    "onderhoud-huurwoning": [
+      "huur",
+      "verhuurder",
+      "woning",
+      "schimmel",
+      "gebrek",
+      "onderhoud",
+      "reparatie",
+    ],
+    "wettelijke-vakantie": [
+      "werk",
+      "werkgever",
+      "vakantie",
+      "verlof",
+      "contract",
+      "uren",
+    ],
+    slachtofferrechten: [
+      "slachtoffer",
+      "aangifte",
+      "politie",
+      "bedreigd",
+      "geweld",
+      "bescherming",
+      "strafbaar",
+    ],
+    "dossier-minderjarig-kind": [
+      "kind",
+      "minderjarig",
+      "ouder",
+      "voogd",
+      "gezag",
+      "jeugdhulp",
+    ],
+    "bezwaar-overheidsbesluit": [
+      "overheid",
+      "gemeente",
+      "besluit",
+      "bezwaar",
+      "aanvraag",
+      "uitkering",
+      "vergunning",
+    ],
   };
 
   return (keywordGroups[right.id] ?? []).reduce(
@@ -76,25 +119,41 @@ function demoAnswer(
     .sort((a, b) => b.score - a.score);
 
   const selected = ranked.filter(({ score }) => score > 0).slice(0, 3).map(({ right }) => right);
-  const relevant = selected.length > 0 ? selected : rightsCatalog.slice(0, 2);
-  const mentionsParents = /ouder|vader|moeder|familie/i.test(question);
-  const missingAge = mentionsParents && !context.ageGroup;
-  const status: ApplicabilityStatus = missingAge ? "meer-context-nodig" : "waarschijnlijk";
+  const situationDomains: Array<[RegExp, Domain]> = [
+    [/cliënt|patiënt|zorg/i, "Zorg & cliënt"],
+    [/werknemer|werkzoekende|professional|organisatie/i, "Werk"],
+    [/huurder|woningzoekende/i, "Wonen"],
+    [/ouder|voogd|familie/i, "Familie"],
+    [/slachtoffer|betrokkene/i, "Veiligheid"],
+    [/overheid|politie/i, "Overheid"],
+  ];
+  const situationDomain = situationDomains.find(([pattern]) => pattern.test(context.situation))?.[1];
+  const contextMatches = situationDomain
+    ? rightsCatalog.filter((right) => right.domain === situationDomain).slice(0, 2)
+    : [];
+  const relevant = selected.length > 0 ? selected : contextMatches;
+  const missingAge = relevant.some((right) => right.id === "dossier-minderjarig-kind") && !context.ageGroup;
+  const needsMoreContext = relevant.length === 0 || missingAge;
+  const status: ApplicabilityStatus = needsMoreContext ? "meer-context-nodig" : "waarschijnlijk";
 
   return {
     summary: missingAge
       ? "Je leeftijd kan hier bepalen welke regels precies gelden."
-      : "Er lijken één of meer cliëntrechten relevant, maar de precieze uitzondering hangt af van je situatie.",
+      : relevant.length > 0
+        ? "Er lijken één of meer algemene rechten relevant, maar de precieze toepassing hangt af van je situatie."
+        : "Er is meer informatie nodig om het juiste rechtsgebied te kiezen.",
     status,
     explanation:
       "De uitkomst is opgebouwd uit gepubliceerde rechtenkaarten. Het platform laat een regel pas als definitief zien wanneer de noodzakelijke context en een actuele bron beschikbaar zijn.",
     assumptions: [
-      context.situation ? `Situatie: ${context.situation}` : "Er is sprake van zorg in Nederland.",
+      context.situation ? `Rol of situatie: ${context.situation}` : "De situatie speelt in Nederland.",
       ...(context.ageGroup ? [`Leeftijdsgroep: ${context.ageGroup}`] : []),
       "Er is nog geen dossier of besluit gecontroleerd.",
     ],
     rights: relevant.map(({ id, title }) => ({ id, title })),
-    nextSteps: relevant.map((right) => right.nextStep).slice(0, 3),
+    nextSteps: relevant.length > 0
+      ? relevant.map((right) => right.nextStep).slice(0, 3)
+      : ["Beschrijf wie erbij betrokken is en of het gaat om zorg, wonen, werk, veiligheid, familie of de overheid."],
     sources: relevant.map(({ sourceTitle, sourceUrl }) => ({
       title: sourceTitle,
       url: sourceUrl,
