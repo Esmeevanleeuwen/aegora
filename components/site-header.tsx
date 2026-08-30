@@ -6,7 +6,7 @@ import { useState } from "react";
 import { BrandMark } from "./brand-mark";
 
 type SiteHeaderProps = {
-  active?: "home" | "rights" | "question";
+  active?: "home" | "basics" | "rights" | "question";
 };
 
 export function SiteHeader({ active = "home" }: SiteHeaderProps) {
@@ -19,6 +19,7 @@ export function SiteHeader({ active = "home" }: SiteHeaderProps) {
         <span>RECHT NU</span>
       </Link>
       <nav className={open ? "nav-open" : ""} aria-label="Hoofdnavigatie">
+        <Link aria-current={active === "basics" ? "page" : undefined} href="/basisrechten" onClick={() => setOpen(false)}>Basisrechten</Link>
         <Link aria-current={active === "rights" ? "page" : undefined} href="/mijn-rechten" onClick={() => setOpen(false)}>Mijn rechten</Link>
         <Link aria-current={active === "question" ? "page" : undefined} href="/vraag" onClick={() => setOpen(false)}>Vraag het de AI</Link>
         <Link href="/#bronnen" onClick={() => setOpen(false)}>Bronnen</Link>
