@@ -23,7 +23,7 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useState } from "react";
 import { domains, rightsCatalog, statusLabels } from "@/lib/rights-data";
 import type { Domain, RightsAnswer, RightItem } from "@/lib/types";
 
@@ -159,10 +159,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const visibleRights = useMemo(
-    () => rightsCatalog.filter((right) => right.domain === selectedDomain),
-    [selectedDomain],
-  );
+  const visibleRights = rightsCatalog.filter((right) => right.domain === selectedDomain);
 
   function toggleTag(tag: string) {
     setTags((current) =>
