@@ -26,6 +26,10 @@ export const rightsCatalog: RightItem[] = [
       "Leeftijd, vertegenwoordiging, wilsbekwaamheid of een wettelijke dwanggrond kan de precieze beslisroute veranderen.",
     ],
     nextStep: "Vraag om de opties, gevolgen en alternatieven schriftelijk uit te leggen.",
+    responsibleParty: "Je behandelaar of zorgaanbieder",
+    deadline: "Vóórdat je instemt met de behandeling",
+    evidence: "Behandelvoorstel, correspondentie en eigen gespreksnotities",
+    escalationRoute: "Bespreek het met je behandelaar en vraag daarna de klachtenfunctionaris.",
     sourceTitle: "Rijksoverheid — rechten en plichten bij medische behandeling",
     sourceUrl:
       "https://www.rijksoverheid.nl/themas/familie-zorg-en-gezondheid/rechten-van-patient-en-privacy/rechten-bij-een-medische-behandeling/rechten-en-plichten-bij-medische-behandeling",
@@ -43,6 +47,10 @@ export const rightsCatalog: RightItem[] = [
       "Delen die de privacy van een ander schaden kunnen worden afgeschermd; de zorgaanbieder moet dit uitleggen.",
     ],
     nextStep: "Vraag de zorgverlener om digitale inzage, een kopie en zo nodig de logging.",
+    responsibleParty: "De zorgaanbieder die je dossier beheert",
+    deadline: "Dien je verzoek schriftelijk in en bewaar een kopie",
+    evidence: "Je inzageverzoek en de reactie van de zorgaanbieder",
+    escalationRoute: "Herinner de zorgaanbieder en benader zo nodig de privacyfunctionaris of klachtenfunctionaris.",
     sourceTitle: "Rijksoverheid — medisch dossier inzien",
     sourceUrl:
       "https://www.rijksoverheid.nl/themas/familie-zorg-en-gezondheid/rechten-van-patient-en-privacy/uw-medisch-dossier/mag-ik-mijn-medisch-dossier-inzien",
@@ -60,6 +68,10 @@ export const rightsCatalog: RightItem[] = [
       "Toestemming, een wettelijke plicht, vertegenwoordiging of een acute veiligheidssituatie kan de beoordeling veranderen.",
     ],
     nextStep: "Vraag welke informatie is gedeeld, met wie, met welk doel en op welke grond.",
+    responsibleParty: "De zorgaanbieder die de gegevens heeft gedeeld",
+    deadline: "Vraag dit zo snel mogelijk na ontdekking",
+    evidence: "Berichten, toestemmingsformulieren en een overzicht van gedeelde gegevens",
+    escalationRoute: "Vraag de privacyfunctionaris om onderzoek en gebruik daarna de klachtenroute.",
     sourceTitle: "Rijksoverheid — bescherming van medische gegevens",
     sourceUrl:
       "https://www.rijksoverheid.nl/themas/familie-zorg-en-gezondheid/digitale-gegevens-in-de-zorg/bescherming-van-medische-gegevens",
@@ -75,6 +87,10 @@ export const rightsCatalog: RightItem[] = [
     conditions: ["De zorgaanbieder valt onder de Nederlandse klachtenregels voor zorg."],
     exceptions: ["De juiste route kan verschillen per zorgvorm, instelling en soort klacht."],
     nextStep: "Vraag schriftelijk naar de klachtenfunctionaris en de aangesloten geschilleninstantie.",
+    responsibleParty: "De zorgaanbieder en diens klachtenfunctionaris",
+    deadline: "Controleer de klachtenregeling van de aanbieder",
+    evidence: "Een tijdlijn, correspondentie en relevante dossierstukken",
+    escalationRoute: "Klachtenfunctionaris → geschilleninstantie; laat bij twijfel de route controleren.",
     sourceTitle: "Rijksoverheid — Wet kwaliteit, klachten en geschillen zorg",
     sourceUrl:
       "https://www.rijksoverheid.nl/themas/familie-zorg-en-gezondheid/kwaliteit-van-de-zorg/wet-kwaliteit-klachten-en-geschillen-zorg",

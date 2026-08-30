@@ -15,15 +15,14 @@ import {
   Landmark,
   LoaderCircle,
   LockKeyhole,
-  Menu,
   MessageCircleQuestion,
   Shield,
   Sparkles,
-  UserRound,
   Users,
-  X,
 } from "lucide-react";
 import { FormEvent, useState } from "react";
+import { BrandMark } from "@/components/brand-mark";
+import { SiteHeader } from "@/components/site-header";
 import { domains, rightsCatalog, statusLabels } from "@/lib/rights-data";
 import type { Domain, RightsAnswer, RightItem } from "@/lib/types";
 
@@ -42,16 +41,6 @@ const iconByDomain: Record<Domain, typeof HeartPulse> = {
   Familie: Users,
   Overheid: Landmark,
 };
-
-function BrandMark() {
-  return (
-    <span className="brand-mark" aria-hidden="true">
-      <span />
-      <span />
-      <span />
-    </span>
-  );
-}
 
 function RightCard({ right }: { right: RightItem }) {
   const [open, setOpen] = useState(false);
@@ -146,7 +135,6 @@ function AnswerPanel({ answer }: { answer: RightsAnswer }) {
 }
 
 export default function HomePage() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [question, setQuestion] = useState(
     "Mijn psycholoog heeft zonder mijn toestemming informatie met mijn ouders gedeeld. Mag dat?",
   );
@@ -200,30 +188,7 @@ export default function HomePage() {
 
   return (
     <main>
-      <header className="site-header">
-        <a className="brand" href="#start" aria-label="RECHT NU homepage">
-          <BrandMark />
-          <span>RECHT NU</span>
-        </a>
-        <nav className={mobileMenuOpen ? "nav-open" : ""} aria-label="Hoofdnavigatie">
-          <a href="#rechten" onClick={() => setMobileMenuOpen(false)}>Mijn rechten</a>
-          <a href="#vraag" onClick={() => setMobileMenuOpen(false)}>Vraag het de AI</a>
-          <a href="#bronnen" onClick={() => setMobileMenuOpen(false)}>Bronnen</a>
-          <a href="#werking" onClick={() => setMobileMenuOpen(false)}>Hoe het werkt</a>
-        </nav>
-        <a className="overview-button" href="#rechten">
-          <UserRound size={17} /> Mijn overzicht
-        </a>
-        <button
-          className="menu-button"
-          type="button"
-          aria-label={mobileMenuOpen ? "Menu sluiten" : "Menu openen"}
-          aria-expanded={mobileMenuOpen}
-          onClick={() => setMobileMenuOpen((value) => !value)}
-        >
-          {mobileMenuOpen ? <X /> : <Menu />}
-        </button>
-      </header>
+      <SiteHeader />
 
       <section className="hero" id="start">
         <div className="hero-copy">

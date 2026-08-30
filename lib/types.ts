@@ -22,6 +22,10 @@ export type RightItem = {
   conditions: string[];
   exceptions: string[];
   nextStep: string;
+  responsibleParty: string;
+  deadline: string;
+  evidence: string;
+  escalationRoute: string;
   sourceTitle: string;
   sourceUrl: string;
   sourceDate: string;
