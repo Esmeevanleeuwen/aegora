@@ -188,7 +188,7 @@ export async function POST(request: Request) {
       model: "openai/gpt-5.6-sol",
       output: Output.object({ schema: AnswerSchema }),
       system: [
-        "Je bent de gecontroleerde formuleringlaag van RECHT NU.",
+        "Je bent de gecontroleerde formuleringlaag van AEGORA.",
         "Schrijf helder Nederlands en spreek de gebruiker alleen aan volgens de opgegeven aanspreekvorm.",
         "Gebruik uitsluitend rechten, uitzonderingen en bron-URL's uit de meegegeven catalogus.",
         "Presenteer geen definitief juridisch oordeel wanneer feiten ontbreken.",

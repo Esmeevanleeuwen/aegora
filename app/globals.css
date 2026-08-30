@@ -85,50 +85,21 @@ select:focus-visible {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 11px;
+  gap: 12px;
   width: max-content;
   color: var(--ink);
   font-size: 18px;
-  font-weight: 850;
-  letter-spacing: -0.04em;
+  font-weight: 820;
+  letter-spacing: 0.035em;
   text-decoration: none;
 }
 
 .brand-mark {
-  position: relative;
-  display: inline-block;
-  width: 31px;
-  height: 31px;
-  transform: rotate(-4deg);
-}
-
-.brand-mark span {
-  position: absolute;
-  left: 3px;
-  top: 12px;
-  width: 26px;
-  height: 7px;
-  border-radius: 10px;
-  transform-origin: center;
-}
-
-.brand-mark span:nth-child(1) {
-  transform: rotate(48deg);
-  background: linear-gradient(90deg, var(--violet), #b047ee);
-}
-
-.brand-mark span:nth-child(2) {
-  transform: rotate(-48deg);
-  background: linear-gradient(90deg, var(--blue), #17b9e8);
-}
-
-.brand-mark span:nth-child(3) {
-  left: 13px;
-  top: 5px;
-  width: 7px;
-  height: 23px;
-  transform: rotate(39deg);
-  background: var(--aqua);
+  display: block;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  overflow: visible;
 }
 
 nav {

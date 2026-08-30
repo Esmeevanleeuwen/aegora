@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 58" role="img" aria-label="AEGORA">
+  <defs>
+    <linearGradient id="icon-left" x1="7" y1="48" x2="30" y2="8" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7B3FF2" />
+      <stop offset="1" stop-color="#984AF0" />
+    </linearGradient>
+    <linearGradient id="icon-right" x1="35" y1="8" x2="56" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2181F4" />
+      <stop offset="1" stop-color="#2767F2" />
+    </linearGradient>
+  </defs>
+  <path d="M27 9 9 47h17" fill="none" stroke="url(#icon-left)" stroke-linecap="round" stroke-linejoin="round" stroke-width="10" />
+  <path d="m37 9 18 38H38" fill="none" stroke="url(#icon-right)" stroke-linecap="round" stroke-linejoin="round" stroke-width="10" />
+  <circle cx="32" cy="35" r="7" fill="#27BFAF" />
+</svg>
