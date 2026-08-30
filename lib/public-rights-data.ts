@@ -1,14 +1,5 @@
-export type PublicRoleId =
-  | "iedereen"
-  | "client"
-  | "psycholoog"
-  | "zorgmedewerker"
-  | "politieagent"
-  | "werknemer"
-  | "huurder"
-  | "ouder";
-
-export type PublicTopic = "Algemeen" | "Zorg" | "Werk" | "Wonen" | "Veiligheid" | "Kinderen";
+export type PublicRoleId = string;
+export type PublicTopic = string;
 export type RuleType = "recht" | "plicht" | "bevoegdheid" | "grens";
 
 export type PublicRole = {
