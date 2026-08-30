@@ -1,6 +1,6 @@
 # RECHT NU
 
-RECHT NU is een openbaar rechtenplatform voor burgers, cliënten en professionals. Bezoekers kunnen zonder account rechten zoeken per rol en onderwerp. Persoonlijke functies worden later achter een account geplaatst.
+RECHT NU is een openbaar rechtenplatform voor burgers, cliënten en professionals. Bezoekers kunnen zonder account rechten zoeken per rol en onderwerp. Met een account kunnen zij daarnaast eigen dossiers en documenten beheren.
 
 ## Wat er nu werkt
 
@@ -14,6 +14,9 @@ RECHT NU is een openbaar rechtenplatform voor burgers, cliënten en professional
 - AI via Vercel AI Gateway wanneer `AI_GATEWAY_API_KEY` aanwezig is.
 - Veilige, deterministische demo-uitkomst zonder API-sleutel.
 - Aparte statussen voor bevestigde toepassing, waarschijnlijkheid, mogelijke uitzonderingen en ontbrekende context.
+- Registreren, inloggen, uitloggen en bevestigen via Supabase Auth.
+- Persoonlijk dashboard voor dossiers, termijnen, profielvoorkeuren en contracten.
+- Private bestandsopslag met een limiet van 10 MB en toegang per eigenaar.
 
 ## Lokaal starten
 
@@ -40,18 +43,19 @@ Zonder sleutel blijft de volledige interface bruikbaar en retourneert de API een
 Vul de publishable key van het gekoppelde Supabase-project in `.env.local` in:
 
 ```env
-SUPABASE_URL=https://frvkibbrbxiqrlmlfnxc.supabase.co
-SUPABASE_PUBLISHABLE_KEY=...
+NEXT_PUBLIC_SUPABASE_URL=https://frvkibbrbxiqrlmlfnxc.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
-De website leest alleen de view `aegora_public_rights`. Row Level Security zorgt dat anonieme bezoekers uitsluitend gepubliceerde rechten en actieve bronnen kunnen zien. Zonder deze variabelen gebruikt de website automatisch de lokale basisset.
+De openbare catalogus leest de view `aegora_public_rights`. Row Level Security zorgt dat anonieme bezoekers uitsluitend gepubliceerde rechten en actieve bronnen kunnen zien. Persoonlijke tabellen zijn alleen beschikbaar na inloggen. Zonder deze variabelen gebruikt de openbare catalogus automatisch de lokale basisset.
 
-De versiebeheerbare database-opzet staat in `supabase/migrations/20260830141711_aegora_rights_catalog.sql`.
+De versiebeheerbare database-opzet staat in `supabase/migrations`. De tweede migratie voegt de accounttabellen, private bucket en alle RLS-regels toe.
 
 ## Belangrijke productgrens
 
 De AI bepaalt niet zelfstandig wat het recht is. Zij mag alleen formuleren met rechten, voorwaarden, uitzonderingen en bron-URL's uit de beheerde catalogus. Zonder passende bron of voldoende context mag geen stellige conclusie worden getoond.
 
-## Volgende stap
+## Beveiliging
 
-Supabase Auth koppelen aan opgeslagen rechten, dossiers, termijnen en versleutelde documentopslag. Publieke rechten blijven ook daarna zonder account beschikbaar.
+Persoonlijke tabellen zijn niet toegankelijk voor anonieme bezoekers. Iedere selectie, toevoeging, wijziging en verwijdering controleert `auth.uid()`. Bestanden staan in een private bucket onder een map met het gebruikers-ID. De secret- of service-role-key hoort nooit in deze applicatie.

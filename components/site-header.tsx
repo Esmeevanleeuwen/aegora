@@ -1,6 +1,6 @@
 "use client";
 
-import { LogIn, Menu, X } from "lucide-react";
+import { CircleUserRound, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { BrandMark } from "./brand-mark";
@@ -25,7 +25,7 @@ export function SiteHeader({ active = "home" }: SiteHeaderProps) {
         <Link href="/#werking" onClick={() => setOpen(false)}>Hoe het werkt</Link>
       </nav>
       <Link className="overview-button" aria-current={active === "account" ? "page" : undefined} href="/account">
-        <LogIn size={17} /> Inloggen
+        <CircleUserRound size={17} /> Mijn account
       </Link>
       <button
         className="menu-button"
