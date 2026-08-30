@@ -14,9 +14,9 @@ export function SiteHeader({ active = "home" }: SiteHeaderProps) {
 
   return (
     <header className="site-header">
-      <Link className="brand" href="/" aria-label="RECHT NU homepage">
+      <Link className="brand" href="/" aria-label="AEGORA homepage">
         <BrandMark />
-        <span>RECHT NU</span>
+        <span>AEGORA</span>
       </Link>
       <nav className={open ? "nav-open" : ""} aria-label="Hoofdnavigatie">
         <Link aria-current={active === "library" ? "page" : undefined} href="/rechten" onClick={() => setOpen(false)}>Alle rechten</Link>

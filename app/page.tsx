@@ -280,7 +280,7 @@ export default function HomePage() {
 
           <button className="ask-button" type="submit" disabled={loading}>
             {loading ? <LoaderCircle className="spin" size={18} /> : <Sparkles size={18} />}
-            {loading ? "Bronnen en context controleren…" : "Vraag het aan RECHT NU"}
+            {loading ? "Bronnen en context controleren…" : "Vraag het aan AEGORA"}
             {!loading && <ArrowRight size={18} />}
           </button>
           <p className="form-note"><LockKeyhole size={13} /> Pronouns veranderen alleen hoe we je aanspreken, niet welke rechten je krijgt.</p>
@@ -370,7 +370,7 @@ export default function HomePage() {
       </section>
 
       <footer>
-        <a className="brand footer-brand" href="#start"><BrandMark /><span>RECHT NU</span></a>
+        <a className="brand footer-brand" href="#start"><BrandMark /><span>AEGORA</span></a>
         <p>Een eerste werkende productbasis binnen de Aegora-repository.</p>
         <a href="#vraag">Stel je vraag <ArrowRight size={15} /></a>
       </footer>

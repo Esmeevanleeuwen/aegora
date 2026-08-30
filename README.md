@@ -1,6 +1,10 @@
-# RECHT NU
+# AEGORA
 
-RECHT NU is een openbaar rechtenplatform voor burgers, cliënten en professionals. Bezoekers kunnen zonder account rechten zoeken per rol en onderwerp. Persoonlijke functies worden later achter een account geplaatst.
+AEGORA, voorheen ontwikkeld onder de werknaam RECHT NU, is een openbaar rechtenplatform voor burgers, cliënten en professionals. Bezoekers kunnen zonder account rechten zoeken per rol en onderwerp. Persoonlijke functies worden later achter een account geplaatst.
+
+## Logo
+
+De open A staat voor de agora als publieke ruimte en voor een duidelijke route vooruit. De aqua stip verbeeldt de persoon die centraal staat. De productieversie staat in `public/aegora-logo.svg`, de transparante presentatieversie in `public/aegora-logo.png` en `app/icon.svg` bevat het compacte beeldmerk voor browser- en appgebruik.
 
 ## Wat er nu werkt
 
