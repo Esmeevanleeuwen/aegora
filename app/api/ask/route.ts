@@ -1,6 +1,9 @@
 import { generateText, Output } from "ai";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { buildGroundedGgzAnswer } from "@/lib/grounded-ggz-answer";
+import { selectLegalRouteIds } from "@/lib/legal-source-data";
+import { getLegalSourceBundle } from "@/lib/legal-source-repository";
 import type { PublicRule } from "@/lib/public-rights-data";
 import { getPublicRightsData } from "@/lib/public-rights-repository";
 import type { ApplicabilityStatus, RightsAnswer } from "@/lib/types";
@@ -14,6 +17,7 @@ const RequestSchema = z.object({
     ageGroup: z.string().max(60).optional().default(""),
     pronouns: z.string().max(60).optional().default(""),
     tags: z.array(z.string().max(80)).max(10).optional().default([]),
+    followUpAnswers: z.record(z.string(), z.string().max(500)).optional().default({}),
   }),
 });
 
@@ -128,6 +132,25 @@ export async function POST(request: Request) {
   try {
     const body = RequestSchema.parse(await request.json());
     const catalog = await getPublicRightsData();
+    const routeIds = selectLegalRouteIds(
+      body.question,
+      [body.context.situation, body.context.ageGroup, ...body.context.tags].join(" "),
+    );
+
+    if (routeIds.length > 0) {
+      const sourceBundle = await getLegalSourceBundle(body.question, routeIds);
+      const groundedAnswer = await buildGroundedGgzAnswer({
+        question: body.question,
+        context: body.context,
+        routeIds,
+        chunks: sourceBundle.chunks,
+        questions: sourceBundle.questions,
+        rules: catalog.rules,
+        sourceData: sourceBundle.dataSource,
+      });
+      return NextResponse.json(groundedAnswer);
+    }
+
     const fallback = buildDemoAnswer(
       body.question,
       body.context,

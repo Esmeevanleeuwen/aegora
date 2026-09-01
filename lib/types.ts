@@ -38,7 +38,27 @@ export type RightsAnswer = {
   assumptions: string[];
   rights: Array<{ id: string; title: string }>;
   nextSteps: string[];
-  sources: Array<{ title: string; url: string }>;
+  sources: Array<{
+    title: string;
+    url: string;
+    locator?: string;
+    chunkKey?: string;
+  }>;
+  legalTracks?: Array<{
+    id: string;
+    title: string;
+    conclusion: string;
+    explanation: string;
+    sourceChunkKeys: string[];
+  }>;
+  clarifyingQuestions?: Array<{
+    id: string;
+    question: string;
+    whyItMatters: string;
+    options: string[];
+  }>;
+  sourceGrounded?: boolean;
+  sourceData?: "supabase" | "local";
   warning: string | null;
   generatedBy: "ai" | "demo";
 };

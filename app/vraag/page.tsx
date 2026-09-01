@@ -26,6 +26,7 @@ export default function QuestionPage() {
   const [ageGroup, setAgeGroup] = useState("");
   const [pronouns, setPronouns] = useState("Nog niet delen");
   const [tags, setTags] = useState<string[]>([]);
+  const [followUpAnswers, setFollowUpAnswers] = useState<Record<string, string>>({});
   const [answer, setAnswer] = useState<RightsAnswer | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -34,20 +35,14 @@ export default function QuestionPage() {
     setTags((current) => current.includes(tag) ? current.filter((item) => item !== tag) : [...current, tag]);
   }
 
-  async function submitQuestion(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (step < 2) {
-      setStep((current) => current + 1);
-      return;
-    }
-
+  async function requestAnswer() {
     setLoading(true);
     setError("");
     try {
       const response = await fetch("/api/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question, context: { situation, ageGroup, pronouns, tags } }),
+        body: JSON.stringify({ question, context: { situation, ageGroup, pronouns, tags, followUpAnswers } }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error ?? "De vraag kon niet worden verwerkt.");
@@ -60,8 +55,22 @@ export default function QuestionPage() {
     }
   }
 
+  async function submitQuestion(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (step < 2) {
+      setStep((current) => current + 1);
+      return;
+    }
+    await requestAnswer();
+  }
+
+  function answerFollowUp(questionId: string, value: string) {
+    setFollowUpAnswers((current) => ({ ...current, [questionId]: value }));
+  }
+
   function restart() {
     setAnswer(null);
+    setFollowUpAnswers({});
     setError("");
     setStep(0);
   }
@@ -139,13 +148,73 @@ export default function QuestionPage() {
 
           {step === 3 && answer && (
             <div className="flow-result" aria-live="polite">
-              <div className="result-heading"><div><span className="eyebrow">Uitkomst</span><h2>{answer.summary}</h2></div><span className={`status status-${answer.status}`}>{statusLabels[answer.status]}</span></div>
+              <div className="result-heading"><div><span className="eyebrow">Uitkomst</span>{answer.sourceGrounded && <span className="grounded-badge"><LockKeyhole size={13} /> Alleen getoonde bronnen</span>}<h2>{answer.summary}</h2></div><span className={`status status-${answer.status}`}>{statusLabels[answer.status]}</span></div>
               <p>{answer.explanation}</p>
+
+              {answer.legalTracks && answer.legalTracks.length > 0 && (
+                <div className="legal-track-list">
+                  {answer.legalTracks.map((track, index) => (
+                    <section className="legal-track" key={track.id}>
+                      <span className="track-number">Spoor {index + 1}</span>
+                      <h3>{track.title}</h3>
+                      <strong>{track.conclusion}</strong>
+                      <p>{track.explanation}</p>
+                      <div className="track-evidence">
+                        {track.sourceChunkKeys.map((chunkKey) => {
+                          const source = answer.sources.find((item) => item.chunkKey === chunkKey);
+                          return source ? <span key={chunkKey}>{source.locator ?? source.title}</span> : null;
+                        })}
+                      </div>
+                    </section>
+                  ))}
+                </div>
+              )}
+
+              {answer.clarifyingQuestions && answer.clarifyingQuestions.length > 0 && (
+                <section className="clarification-panel">
+                  <span className="eyebrow">Maak het antwoord preciezer</span>
+                  <h3>Deze feiten kunnen de uitkomst veranderen</h3>
+                  <p>Beantwoord alleen wat je weet. “Ik weet het niet” is ook bruikbare informatie.</p>
+                  <div className="clarification-questions">
+                    {answer.clarifyingQuestions.map((item) => (
+                      <fieldset key={item.id}>
+                        <legend>{item.question}</legend>
+                        <small>{item.whyItMatters}</small>
+                        <div>
+                          {item.options.map((option) => (
+                            <button
+                              type="button"
+                              key={option}
+                              className={followUpAnswers[item.id] === option ? "selected" : ""}
+                              aria-pressed={followUpAnswers[item.id] === option}
+                              onClick={() => answerFollowUp(item.id, option)}
+                            >
+                              {followUpAnswers[item.id] === option && <Check size={13} />}{option}
+                            </button>
+                          ))}
+                        </div>
+                      </fieldset>
+                    ))}
+                  </div>
+                  {error && <p className="form-error" role="alert"><CircleAlert size={16} />{error}</p>}
+                  <button
+                    className="flow-next clarification-submit"
+                    type="button"
+                    disabled={loading || !answer.clarifyingQuestions.some((item) => Boolean(followUpAnswers[item.id]))}
+                    onClick={() => void requestAnswer()}
+                  >
+                    {loading ? <LoaderCircle className="spin" size={18} /> : <Sparkles size={18} />}
+                    {loading ? "Bronnen opnieuw toepassen…" : "Werk mijn antwoord bij"}
+                    <ArrowRight size={17} />
+                  </button>
+                </section>
+              )}
+
               <div className="result-sections">
                 <section><span>01</span><h3>Wat geldt mogelijk?</h3><ul>{answer.rights.map((right) => <li key={right.id}>{right.title}</li>)}</ul></section>
                 <section><span>02</span><h3>Wat kun je nu doen?</h3><ol>{answer.nextSteps.map((item) => <li key={item}>{item}</li>)}</ol></section>
               </div>
-              <div className="result-sources"><strong>Gebruikte officiële bronnen</strong>{answer.sources.map((source) => <a key={source.url} href={source.url} target="_blank" rel="noreferrer">{source.title}<ExternalLink size={13} /></a>)}</div>
+              <div className="result-sources"><strong>Gebruikte officiële bronnen en vindplaatsen</strong>{answer.sources.map((source) => <a key={source.chunkKey ?? `${source.url}-${source.locator ?? "bron"}`} href={source.url} target="_blank" rel="noreferrer"><span>{source.title}{source.locator && <small>{source.locator}</small>}</span><ExternalLink size={13} /></a>)}</div>
               {answer.warning && <p className="answer-warning"><CircleAlert size={17} />{answer.warning}</p>}
               <div className="result-actions"><Link className="flow-next" href="/rechten">Bekijk alle openbare rechten <ArrowRight size={17} /></Link><button className="back-button" type="button" onClick={restart}><RotateCcw size={16} /> Nieuwe vraag</button></div>
             </div>

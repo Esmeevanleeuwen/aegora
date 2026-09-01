@@ -92,7 +92,10 @@ export async function getPublicRightsData(): Promise<PublicRightsData> {
   if (!config) return localData;
 
   const request = (path: string) => fetch(`${config.url}/rest/v1/${path}`, {
-    headers: { apikey: config.key },
+    headers: {
+      apikey: config.key,
+      Authorization: `Bearer ${config.key}`,
+    },
     next: { revalidate: 3600 },
   });
 
