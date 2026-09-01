@@ -136,7 +136,11 @@ export async function getPublicRightsData(): Promise<PublicRightsData> {
       })),
       dataSource: "supabase",
     };
-  } catch {
+  } catch (error) {
+    console.error(
+      "Openbare rechten konden niet uit Supabase worden gelezen.",
+      error instanceof Error ? error.message : "Onbekende fout.",
+    );
     return localData;
   }
 }
