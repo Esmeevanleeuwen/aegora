@@ -23,6 +23,7 @@ import {
 import { FormEvent, useState } from "react";
 import { BrandMark } from "@/components/brand-mark";
 import { SiteHeader } from "@/components/site-header";
+import { publicSituations } from "@/lib/public-rights-data";
 import { domains, rightsCatalog, statusLabels } from "@/lib/rights-data";
 import type { Domain, RightsAnswer, RightItem } from "@/lib/types";
 
@@ -35,12 +36,6 @@ const situationOptions = [
   "Slachtoffer of betrokkene",
   "Burger bij overheid of politie",
   "Professional of organisatie",
-];
-
-const contextOptions = [
-  "Er is een besluit of contract",
-  "Er is informatie gedeeld",
-  "Er loopt een termijn",
 ];
 
 const iconByDomain: Record<Domain, typeof HeartPulse> = {
@@ -265,15 +260,15 @@ export default function HomePage() {
 
           <fieldset className="context-chips">
             <legend>Extra context — alleen als het je antwoord kan veranderen</legend>
-            {contextOptions.map((tag) => (
+            {publicSituations.map((option) => (
               <button
-                className={tags.includes(tag) ? "chip selected" : "chip"}
+                className={tags.includes(option.slug) ? "chip selected" : "chip"}
                 type="button"
-                key={tag}
-                aria-pressed={tags.includes(tag)}
-                onClick={() => toggleTag(tag)}
+                key={option.slug}
+                aria-pressed={tags.includes(option.slug)}
+                onClick={() => toggleTag(option.slug)}
               >
-                {tags.includes(tag) && <Check size={14} />} {tag}
+                {tags.includes(option.slug) && <Check size={14} />} {option.label}
               </button>
             ))}
           </fieldset>

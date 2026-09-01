@@ -4,11 +4,11 @@ import { login } from "@/app/auth/actions";
 import { SiteHeader } from "@/components/site-header";
 
 type LoginPageProps = {
-  searchParams: Promise<{ error?: string; message?: string }>;
+  searchParams: Promise<{ error?: string; message?: string; next?: string }>;
 };
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const { error, message } = await searchParams;
+  const { error, message, next = "/account" } = await searchParams;
 
   return (
     <main className="auth-page">
@@ -33,13 +33,14 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           {message ? <div className="form-notice success">{message}</div> : null}
           {error ? <div className="form-notice error">{error}</div> : null}
           <form action={login} className="auth-form">
+            <input type="hidden" name="next" value={next} />
             <label htmlFor="login-email">E-mailadres</label>
             <input id="login-email" name="email" type="email" autoComplete="email" required />
             <label htmlFor="login-password">Wachtwoord</label>
             <input id="login-password" name="password" type="password" autoComplete="current-password" minLength={8} required />
             <button type="submit">Inloggen <ArrowRight size={17} /></button>
           </form>
-          <p className="auth-switch">Nog geen account? <Link href="/registreren">Account maken</Link></p>
+          <p className="auth-switch">Nog geen account? <Link href={`/registreren?next=${encodeURIComponent(next)}`}>Account maken</Link></p>
         </div>
       </section>
     </main>

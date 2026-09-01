@@ -1,8 +1,9 @@
 import { generateText, Output } from "ai";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { rightsCatalog } from "@/lib/rights-data";
-import type { ApplicabilityStatus, Domain, RightsAnswer, RightItem } from "@/lib/types";
+import type { PublicRule } from "@/lib/public-rights-data";
+import { getPublicRightsData } from "@/lib/public-rights-repository";
+import type { ApplicabilityStatus, RightsAnswer } from "@/lib/types";
 
 export const runtime = "nodejs";
 
@@ -33,133 +34,92 @@ const AnswerSchema = z.object({
   warning: z.string().nullable(),
 });
 
-function scoreRight(question: string, right: RightItem) {
-  const text = question.toLowerCase();
-  const keywordGroups: Record<string, string[]> = {
-    "duidelijke-informatie-en-keuze": [
-      "toestemming",
-      "behandeling",
-      "weigeren",
-      "informatie",
-      "medicijn",
-    ],
-    "inzage-en-kopie-dossier": ["dossier", "inzage", "kopie", "logging", "bekeken"],
-    "privacy-medische-gegevens": [
-      "gedeeld",
-      "delen",
-      "ouders",
-      "privacy",
-      "geheim",
-      "informatie",
-    ],
-    "klacht-en-geschil-zorg": [
-      "klacht",
-      "klagen",
-      "geschil",
-      "fout",
-      "niet gehoord",
-    ],
-    "onderhoud-huurwoning": [
-      "huur",
-      "verhuurder",
-      "woning",
-      "schimmel",
-      "gebrek",
-      "onderhoud",
-      "reparatie",
-    ],
-    "wettelijke-vakantie": [
-      "werk",
-      "werkgever",
-      "vakantie",
-      "verlof",
-      "contract",
-      "uren",
-    ],
-    slachtofferrechten: [
-      "slachtoffer",
-      "aangifte",
-      "politie",
-      "bedreigd",
-      "geweld",
-      "bescherming",
-      "strafbaar",
-    ],
-    "dossier-minderjarig-kind": [
-      "kind",
-      "minderjarig",
-      "ouder",
-      "voogd",
-      "gezag",
-      "jeugdhulp",
-    ],
-    "bezwaar-overheidsbesluit": [
-      "overheid",
-      "gemeente",
-      "besluit",
-      "bezwaar",
-      "aanvraag",
-      "uitkering",
-      "vergunning",
-    ],
-  };
+const stopWords = new Set([
+  "de", "een", "het", "dat", "dit", "die", "wat", "waar", "wie", "hoe", "mijn", "zijn",
+  "haar", "hun", "voor", "van", "met", "naar", "maar", "niet", "wel", "kan", "mag", "moet",
+  "wordt", "heeft", "hebben", "over", "door", "zonder", "bij", "als", "ook", "nog", "er",
+]);
 
-  return (keywordGroups[right.id] ?? []).reduce(
-    (score, keyword) => score + (text.includes(keyword) ? 1 : 0),
-    0,
-  );
+function normalize(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
 }
 
-function demoAnswer(
+function scoreRight(question: string, right: PublicRule) {
+  const tokens = normalize(question)
+    .split(/[^a-z0-9]+/)
+    .filter((token) => token.length > 2 && !stopWords.has(token));
+  const searchable = normalize([
+    right.title,
+    right.summary,
+    right.appliesWhen,
+    right.boundary,
+    right.practicalNote,
+    right.topic,
+  ].join(" "));
+
+  return tokens.reduce((score, token) => score + (searchable.includes(token) ? 1 : 0), 0);
+}
+
+function buildDemoAnswer(
   question: string,
   context: z.infer<typeof RequestSchema>["context"],
+  rules: PublicRule[],
+  roles: Array<{ id: string; label: string }>,
+  situations: Array<{ slug: string; label: string }>,
 ): RightsAnswer {
-  const ranked = rightsCatalog
+  const contextRole = roles.find((role) =>
+    normalize(context.situation).includes(normalize(role.label)),
+  )?.id;
+  const contextSituations = context.tags
+    .map((tag) => situations.find((item) => item.slug === tag || item.label === tag)?.slug)
+    .filter((value): value is string => Boolean(value));
+
+  const candidates = rules.filter((right) => {
+    const roleMatches = !contextRole
+      || right.roles.includes(contextRole)
+      || right.roles.includes("iedereen");
+    const situationMatches = contextSituations.length === 0
+      || contextSituations.some((slug) => right.situations.includes(slug));
+    return roleMatches && situationMatches;
+  });
+  const ranked = candidates
     .map((right) => ({ right, score: scoreRight(question, right) }))
     .sort((a, b) => b.score - a.score);
-
-  const selected = ranked.filter(({ score }) => score > 0).slice(0, 3).map(({ right }) => right);
-  const situationDomains: Array<[RegExp, Domain]> = [
-    [/cliënt|patiënt|zorg/i, "Zorg & cliënt"],
-    [/werknemer|werkzoekende|professional|organisatie/i, "Werk"],
-    [/huurder|woningzoekende/i, "Wonen"],
-    [/ouder|voogd|familie/i, "Familie"],
-    [/slachtoffer|betrokkene/i, "Veiligheid"],
-    [/overheid|politie/i, "Overheid"],
-  ];
-  const situationDomain = situationDomains.find(([pattern]) => pattern.test(context.situation))?.[1];
-  const contextMatches = situationDomain
-    ? rightsCatalog.filter((right) => right.domain === situationDomain).slice(0, 2)
-    : [];
-  const relevant = selected.length > 0 ? selected : contextMatches;
-  const missingAge = relevant.some((right) => right.id === "dossier-minderjarig-kind") && !context.ageGroup;
-  const needsMoreContext = relevant.length === 0 || missingAge;
+  const directMatches = ranked.filter(({ score }) => score > 0).slice(0, 3).map(({ right }) => right);
+  const relevant = directMatches.length > 0
+    ? directMatches
+    : contextRole || contextSituations.length > 0
+      ? ranked.slice(0, 2).map(({ right }) => right)
+      : [];
+  const needsMoreContext = relevant.length === 0;
   const status: ApplicabilityStatus = needsMoreContext ? "meer-context-nodig" : "waarschijnlijk";
 
   return {
-    summary: missingAge
-      ? "Je leeftijd kan hier bepalen welke regels precies gelden."
-      : relevant.length > 0
-        ? "Er lijken één of meer algemene rechten relevant, maar de precieze toepassing hangt af van je situatie."
-        : "Er is meer informatie nodig om het juiste rechtsgebied te kiezen.",
+    summary: needsMoreContext
+      ? "Er is meer informatie nodig om de juiste rechtenroute te kiezen."
+      : "Er lijken algemene rechten relevant, maar de precieze toepassing hangt af van de feiten.",
     status,
     explanation:
-      "De uitkomst is opgebouwd uit gepubliceerde rechtenkaarten. Het platform laat een regel pas als definitief zien wanneer de noodzakelijke context en een actuele bron beschikbaar zijn.",
+      "De uitkomst gebruikt dezelfde gepubliceerde rechtenkaarten als de openbare bibliotheek. Formele regels, praktische grenzen en ontbrekende context blijven apart zichtbaar.",
     assumptions: [
       context.situation ? `Rol of situatie: ${context.situation}` : "De situatie speelt in Nederland.",
       ...(context.ageGroup ? [`Leeftijdsgroep: ${context.ageGroup}`] : []),
-      "Er is nog geen dossier of besluit gecontroleerd.",
+      ...(contextSituations.length ? [`Gekozen context: ${contextSituations.join(", ")}`] : []),
+      "Er is nog geen persoonlijk document of besluit gecontroleerd.",
     ],
     rights: relevant.map(({ id, title }) => ({ id, title })),
     nextSteps: relevant.length > 0
       ? relevant.map((right) => right.nextStep).slice(0, 3)
-      : ["Beschrijf wie erbij betrokken is en of het gaat om zorg, wonen, werk, veiligheid, familie of de overheid."],
+      : ["Beschrijf wie erbij betrokken is, wat er gebeurde en of je een brief, besluit, contract of termijn hebt."],
     sources: relevant.map(({ sourceTitle, sourceUrl }) => ({
       title: sourceTitle,
       url: sourceUrl,
     })),
     warning:
-      "Dit is algemene informatie en geen definitief juridisch oordeel. Bij dwang, acuut gevaar of een lopende termijn is menselijke hulp nodig.",
+      "Dit is algemene informatie en geen definitief juridisch oordeel. Bij direct gevaar, dwang of een lopende termijn is menselijke hulp nodig.",
     generatedBy: "demo",
   };
 }
@@ -167,21 +127,31 @@ function demoAnswer(
 export async function POST(request: Request) {
   try {
     const body = RequestSchema.parse(await request.json());
-    const fallback = demoAnswer(body.question, body.context);
+    const catalog = await getPublicRightsData();
+    const fallback = buildDemoAnswer(
+      body.question,
+      body.context,
+      catalog.rules,
+      catalog.roles,
+      catalog.situations,
+    );
 
     if (!process.env.AI_GATEWAY_API_KEY) {
       return NextResponse.json(fallback);
     }
 
-    const sourceContext = rightsCatalog.map((right) => ({
+    const sourceContext = catalog.rules.map((right) => ({
       id: right.id,
       title: right.title,
       summary: right.summary,
-      conditions: right.conditions,
-      exceptions: right.exceptions,
+      appliesWhen: right.appliesWhen,
+      boundary: right.boundary,
+      practicalNote: right.practicalNote,
       nextStep: right.nextStep,
+      situations: right.situations,
       sourceTitle: right.sourceTitle,
       sourceUrl: right.sourceUrl,
+      sourceCheckedAt: right.sourceCheckedAt,
     }));
 
     const { output } = await generateText({
@@ -190,7 +160,8 @@ export async function POST(request: Request) {
       system: [
         "Je bent de gecontroleerde formuleringlaag van RECHT NU.",
         "Schrijf helder Nederlands en spreek de gebruiker alleen aan volgens de opgegeven aanspreekvorm.",
-        "Gebruik uitsluitend rechten, uitzonderingen en bron-URL's uit de meegegeven catalogus.",
+        "Gebruik uitsluitend rechten, grenzen, vervolgstappen en bron-URL's uit de meegegeven gepubliceerde catalogus.",
+        "Maak steeds onderscheid tussen het formele recht en de praktische uitvoering.",
         "Presenteer geen definitief juridisch oordeel wanneer feiten ontbreken.",
         "Zet aannames expliciet in assumptions en kies meer-context-nodig bij een materieel ontbrekend feit.",
         "Noem ras, genderidentiteit of juridisch geslacht alleen wanneer dit aantoonbaar relevant is voor de vraag.",
@@ -213,9 +184,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(
-      {
-        error: "Het antwoord kon niet veilig worden opgebouwd. Probeer het opnieuw.",
-      },
+      { error: "Het antwoord kon niet veilig worden opgebouwd. Probeer het opnieuw." },
       { status: 500 },
     );
   }

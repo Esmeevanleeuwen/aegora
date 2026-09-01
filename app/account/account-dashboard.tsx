@@ -1,11 +1,13 @@
 "use client";
 
 import {
+  BookmarkCheck,
   CalendarDays,
   CheckCircle2,
   ChevronRight,
   CircleUserRound,
   Download,
+  ExternalLink,
   FileCheck2,
   FilePlus2,
   FileText,
@@ -21,12 +23,13 @@ import {
   Trash2,
   UploadCloud,
 } from "lucide-react";
+import Link from "next/link";
 import { type FormEvent, useMemo, useState } from "react";
 import { logout } from "@/app/auth/actions";
 import { createClient } from "@/lib/supabase/client";
-import type { AegoraDocument, AegoraDossier, AegoraProfile } from "@/lib/personal-data";
+import type { AegoraDocument, AegoraDossier, AegoraProfile, AegoraSavedRight } from "@/lib/personal-data";
 
-type DashboardView = "overzicht" | "dossiers" | "documenten" | "profiel";
+type DashboardView = "overzicht" | "rechten" | "dossiers" | "documenten" | "profiel";
 
 type AccountDashboardProps = {
   userId: string;
@@ -34,6 +37,7 @@ type AccountDashboardProps = {
   initialProfile: AegoraProfile | null;
   initialDossiers: AegoraDossier[];
   initialDocuments: AegoraDocument[];
+  initialSavedRights: AegoraSavedRight[];
 };
 
 const bucketName = "aegora-private-documents";
@@ -68,6 +72,15 @@ const documentLabels: Record<AegoraDocument["document_type"], string> = {
   overig: "Overig",
 };
 
+const categoryByTopic: Record<string, string> = {
+  Algemeen: "anders",
+  Zorg: "zorg",
+  Werk: "werk",
+  Wonen: "wonen",
+  Veiligheid: "politie_justitie",
+  Kinderen: "zorg",
+};
+
 function formatDate(value: string | null) {
   if (!value) return "Geen datum";
   return new Intl.DateTimeFormat("nl-NL", {
@@ -93,11 +106,13 @@ export function AccountDashboard({
   initialProfile,
   initialDossiers,
   initialDocuments,
+  initialSavedRights,
 }: AccountDashboardProps) {
   const [view, setView] = useState<DashboardView>("overzicht");
   const [profile, setProfile] = useState(initialProfile);
   const [dossiers, setDossiers] = useState(initialDossiers);
   const [documents, setDocuments] = useState(initialDocuments);
+  const [savedRights, setSavedRights] = useState(initialSavedRights);
   const [documentType, setDocumentType] = useState<AegoraDocument["document_type"]>("contract");
   const [busy, setBusy] = useState<string | null>(null);
   const [notice, setNotice] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -286,8 +301,45 @@ export function AccountDashboard({
     setNotice({ type: "success", text: "Profiel opgeslagen." });
   }
 
+  async function removeSavedRight(savedRight: AegoraSavedRight) {
+    setBusy(`saved-${savedRight.id}`);
+    setNotice(null);
+    const supabase = createClient();
+    const { error } = await supabase
+      .from("aegora_saved_rights")
+      .delete()
+      .eq("id", savedRight.id)
+      .eq("user_id", userId);
+    setBusy(null);
+    if (error) return showError("Het opgeslagen recht kon niet worden verwijderd.");
+    setSavedRights((current) => current.filter((item) => item.id !== savedRight.id));
+    setNotice({ type: "success", text: "Recht verwijderd uit je overzicht." });
+  }
+
+  async function createDossierFromRight(savedRight: AegoraSavedRight) {
+    setBusy(`saved-dossier-${savedRight.id}`);
+    setNotice(null);
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("aegora_dossiers")
+      .insert({
+        user_id: userId,
+        title: savedRight.right.title,
+        description: `${savedRight.right.summary}\n\nEerstvolgende stap: ${savedRight.right.nextStep}`,
+        category: categoryByTopic[savedRight.right.topic] ?? "anders",
+      })
+      .select("*")
+      .single();
+    setBusy(null);
+    if (error || !data) return showError("Van dit recht kon geen dossier worden gemaakt.");
+    setDossiers((current) => [data as AegoraDossier, ...current]);
+    setNotice({ type: "success", text: "Dossier gemaakt vanuit je opgeslagen recht." });
+    setView("dossiers");
+  }
+
   const navigation: Array<{ id: DashboardView; label: string; icon: typeof LayoutDashboard }> = [
     { id: "overzicht", label: "Overzicht", icon: LayoutDashboard },
+    { id: "rechten", label: "Opgeslagen rechten", icon: BookmarkCheck },
     { id: "dossiers", label: "Dossiers", icon: Folders },
     { id: "documenten", label: "Contracten & bestanden", icon: FileText },
     { id: "profiel", label: "Mijn gegevens", icon: CircleUserRound },
@@ -323,6 +375,7 @@ export function AccountDashboard({
           <div className="dashboard-view">
             <div className="dashboard-stats">
               <article><span><Folders size={19} /></span><strong>{dossiers.length}</strong><small>Dossiers</small></article>
+              <article><span><BookmarkCheck size={19} /></span><strong>{savedRights.length}</strong><small>Opgeslagen rechten</small></article>
               <article><span><FileCheck2 size={19} /></span><strong>{contracts.length}</strong><small>Contracten</small></article>
               <article><span><FileText size={19} /></span><strong>{documents.length}</strong><small>Bestanden</small></article>
             </div>
@@ -341,6 +394,38 @@ export function AccountDashboard({
               </article>
             </div>
             <div className="privacy-strip"><FolderLock size={20} /><div><strong>Openbare rechten en jouw documenten blijven gescheiden.</strong><p>Een bestand uit je account wordt nooit automatisch gebruikt in de openbare bibliotheek of een AI-antwoord.</p></div></div>
+          </div>
+        ) : null}
+
+        {view === "rechten" ? (
+          <div className="dashboard-view">
+            <div className="saved-rights-heading">
+              <div><span>Van openbare informatie naar je eigen overzicht</span><h2>{savedRights.length} opgeslagen rechten</h2></div>
+              <Link href="/rechten">Meer rechten bekijken <ExternalLink size={14} /></Link>
+            </div>
+            {savedRights.length ? (
+              <div className="saved-rights-list">
+                {savedRights.map((savedRight) => (
+                  <article key={savedRight.id}>
+                    <div className="saved-right-topline"><span>{savedRight.right.topic}</span><small>{savedRight.right.type}</small></div>
+                    <h3>{savedRight.right.title}</h3>
+                    <p>{savedRight.right.summary}</p>
+                    <div className="saved-right-next"><strong>Wat kun je nu doen?</strong><p>{savedRight.right.nextStep}</p></div>
+                    <div className="saved-right-actions">
+                      <button type="button" disabled={busy === `saved-dossier-${savedRight.id}`} onClick={() => createDossierFromRight(savedRight)}>
+                        {busy === `saved-dossier-${savedRight.id}` ? <LoaderCircle className="spin" size={15} /> : <FolderPlus size={15} />} Maak dossier
+                      </button>
+                      <a href={savedRight.right.sourceUrl} target="_blank" rel="noreferrer">Bron <ExternalLink size={13} /></a>
+                      <button type="button" className="saved-right-remove" aria-label={`${savedRight.right.title} verwijderen`} disabled={busy === `saved-${savedRight.id}`} onClick={() => removeSavedRight(savedRight)}>
+                        {busy === `saved-${savedRight.id}` ? <LoaderCircle className="spin" size={15} /> : <Trash2 size={15} />}
+                      </button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-state saved-rights-empty"><BookmarkCheck size={28} /><h3>Nog geen rechten bewaard</h3><p>Open de openbare rechtenroute en kies bij een kaart voor “Bewaren”.</p><Link href="/rechten">Naar de rechtenroute</Link></div>
+            )}
           </div>
         ) : null}
 

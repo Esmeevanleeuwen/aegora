@@ -36,3 +36,12 @@ export type AegoraDocument = {
   created_at: string;
   updated_at: string;
 };
+
+export type AegoraSavedRight = {
+  id: string;
+  right_id: string;
+  note: string | null;
+  created_at: string;
+  right: PublicRule;
+};
+import type { PublicRule } from "@/lib/public-rights-data";

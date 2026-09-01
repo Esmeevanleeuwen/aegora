@@ -4,11 +4,11 @@ import { signup } from "@/app/auth/actions";
 import { SiteHeader } from "@/components/site-header";
 
 type RegisterPageProps = {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; next?: string }>;
 };
 
 export default async function RegisterPage({ searchParams }: RegisterPageProps) {
-  const { error } = await searchParams;
+  const { error, next = "/account" } = await searchParams;
 
   return (
     <main className="auth-page">
@@ -34,6 +34,7 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
           </div>
           {error ? <div className="form-notice error">{error}</div> : null}
           <form action={signup} className="auth-form">
+            <input type="hidden" name="next" value={next} />
             <label htmlFor="register-email">E-mailadres</label>
             <input id="register-email" name="email" type="email" autoComplete="email" required />
             <label htmlFor="register-password">Wachtwoord</label>
@@ -41,7 +42,7 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
             <small>Gebruik minimaal 8 tekens.</small>
             <button type="submit">Account maken <ArrowRight size={17} /></button>
           </form>
-          <p className="auth-switch">Al een account? <Link href="/inloggen">Inloggen</Link></p>
+          <p className="auth-switch">Al een account? <Link href={`/inloggen?next=${encodeURIComponent(next)}`}>Inloggen</Link></p>
         </div>
       </section>
     </main>

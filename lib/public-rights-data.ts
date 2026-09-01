@@ -2,6 +2,12 @@ export type PublicRoleId = string;
 export type PublicTopic = string;
 export type RuleType = "recht" | "plicht" | "bevoegdheid" | "grens";
 
+export type PublicSituation = {
+  slug: string;
+  label: string;
+  description: string;
+};
+
 export type PublicRole = {
   id: PublicRoleId;
   label: string;
@@ -18,9 +24,19 @@ export type PublicRule = {
   summary: string;
   appliesWhen: string;
   boundary: string;
+  practicalNote: string;
+  nextStep: string;
+  situations: string[];
   sourceTitle: string;
   sourceUrl: string;
+  sourcePublisher: string;
+  sourceCheckedAt: string | null;
 };
+
+type PublicRuleBase = Omit<
+  PublicRule,
+  "practicalNote" | "nextStep" | "situations" | "sourcePublisher" | "sourceCheckedAt"
+>;
 
 export const publicRoles: PublicRole[] = [
   { id: "iedereen", label: "Iedereen", description: "Grondrechten en bescherming die niet van een beroep afhangen.", icon: "users" },
@@ -33,6 +49,14 @@ export const publicRoles: PublicRole[] = [
   { id: "ouder", label: "Ouder of voogd", description: "Beslissen, informatie en vertegenwoordiging van een kind.", icon: "family" },
 ];
 
+export const publicSituations: PublicSituation[] = [
+  { slug: "besluit-of-contract", label: "Er is een besluit of contract", description: "Een schriftelijke afspraak of formeel besluit bepaalt mogelijk de route." },
+  { slug: "informatie-gedeeld", label: "Er is informatie gedeeld", description: "Privacy, toestemming of beroepsgeheim kan relevant zijn." },
+  { slug: "lopende-termijn", label: "Er loopt een termijn", description: "Een bezwaar-, reactie- of opzegtermijn kan gevolgen hebben." },
+  { slug: "klacht-of-geschil", label: "Er is een klacht of geschil", description: "De juiste klachten- of bezwaarroute moet worden bepaald." },
+  { slug: "acuut-gevaar", label: "Er is direct gevaar", description: "Veiligheid en directe menselijke hulp gaan voor op algemene uitleg." },
+];
+
 const equalTreatmentSource =
   "https://www.mensenrechten.nl/mensenrechten-voor-jou/discriminatie-en-gelijke-behandeling/wat-zegt-de-wet-over-discriminatie-en-gelijke-behandeling";
 const patientRightsSource =
@@ -40,7 +64,7 @@ const patientRightsSource =
 const safeWorkSource =
   "https://www.arboportaal.nl/onderwerpen/rechten-plichten-werkenden/algemene-rechten--plichten-van-werkenden";
 
-export const publicRules: PublicRule[] = [
+const publicRuleBases: PublicRuleBase[] = [
   {
     id: "gelijke-behandeling",
     roles: ["iedereen"],
@@ -258,6 +282,108 @@ export const publicRules: PublicRule[] = [
     sourceUrl: "https://www.rijksoverheid.nl/themas/familie-zorg-en-gezondheid/rechten-van-patient-en-privacy/jongeren-en-het-medisch-dossier/medisch-dossier-minderjarige-kind-inzien",
   },
 ];
+
+type RouteMeta = Pick<PublicRule, "practicalNote" | "nextStep" | "situations">;
+
+const routeMeta: Record<string, RouteMeta> = {
+  "gelijke-behandeling": {
+    practicalNote: "Ongelijke behandeling is niet automatisch verboden discriminatie. De reden, vergelijking en context moeten duidelijk worden.",
+    nextStep: "Schrijf op wat er gebeurde, wie anders werd behandeld en welke reden daarbij werd genoemd.",
+    situations: ["klacht-of-geschil"],
+  },
+  "vrijheid-meningsuiting": {
+    practicalNote: "De grens hangt sterk af van de precieze woorden, de context, het bereik en de vraag of iemand wordt bedreigd of tot uitsluiting oproept.",
+    nextStep: "Bewaar de volledige uiting en context voordat je beoordeelt welke juridische grens mogelijk is bereikt.",
+    situations: ["klacht-of-geschil", "acuut-gevaar"],
+  },
+  privacy: {
+    practicalNote: "Toestemming is niet de enige mogelijke grondslag. De organisatie moet wel kunnen uitleggen waarom de verwerking noodzakelijk en toegestaan is.",
+    nextStep: "Vraag welke gegevens zijn gebruikt of gedeeld, met welk doel en op basis van welke grondslag.",
+    situations: ["informatie-gedeeld", "klacht-of-geschil"],
+  },
+  "patient-informatie-keuze": {
+    practicalNote: "Leeftijd, vertegenwoordiging, wilsbekwaamheid en verplichte zorg kunnen bepalen wie beslist en welke procedure nodig is.",
+    nextStep: "Vraag om begrijpelijke uitleg over het voorstel, de alternatieven, risico's en gevolgen van niet behandelen.",
+    situations: ["besluit-of-contract", "klacht-of-geschil"],
+  },
+  "patient-dossier": {
+    practicalNote: "Een dossier kan ook informatie over anderen bevatten. Dat kan invloed hebben op welke delen volledig zichtbaar zijn.",
+    nextStep: "Vraag schriftelijk om inzage of een kopie en benoem apart welke feitelijke gegevens volgens jou niet kloppen.",
+    situations: ["informatie-gedeeld", "klacht-of-geschil", "lopende-termijn"],
+  },
+  "patient-klacht": {
+    practicalNote: "De juiste route verschilt per zorgvorm, beroep en soort klacht. Een gesprek, klachtenfunctionaris, geschilleninstantie en tuchtrecht hebben verschillende doelen.",
+    nextStep: "Beschrijf één voor één wat er gebeurde, wat je al hebt besproken en welke oplossing je vraagt.",
+    situations: ["klacht-of-geschil", "lopende-termijn"],
+  },
+  "beroepsgeheim-zorg": {
+    practicalNote: "Een uitzondering op geheimhouding vraagt een concrete wettelijke grond of een zorgvuldig onderbouwde noodsituatie; alleen algemene zorgen zijn niet genoeg.",
+    nextStep: "Leg vast welke informatie is gedeeld, met wie, waarom en welke toestemming of uitzondering is gebruikt.",
+    situations: ["informatie-gedeeld", "klacht-of-geschil", "acuut-gevaar"],
+  },
+  "veilig-werken-zorg": {
+    practicalNote: "De werkgever moet risico's aanpakken, maar heeft daarvoor vaak concrete meldingen en informatie over de werksituatie nodig.",
+    nextStep: "Meld het risico schriftelijk en bewaar wat je werkgever daarna doet of nalaat.",
+    situations: ["klacht-of-geschil", "acuut-gevaar"],
+  },
+  "psycholoog-titel-tucht": {
+    practicalNote: "De gebruikte functienaam zegt niet altijd welke wettelijke registratie, klachtenroute of bevoegdheid daadwerkelijk geldt.",
+    nextStep: "Controleer de exacte beroepstitel en registratie in het BIG-register voordat je een procedure kiest.",
+    situations: ["klacht-of-geschil", "besluit-of-contract"],
+  },
+  "zorg-tucht-verweer": {
+    practicalNote: "Het tuchtcollege beoordeelt professioneel handelen. Dat is een andere procedure dan een arbeidsconflict, schadeclaim of strafzaak.",
+    nextStep: "Lees de klacht en reactietermijn volledig, orden het dossier en vraag zo nodig professionele rechtsbijstand.",
+    situations: ["klacht-of-geschil", "lopende-termijn"],
+  },
+  "zorg-bevoegd-bekwaam": {
+    practicalNote: "Een opdracht of functie maakt iemand niet automatisch bekwaam. De concrete handeling, scholing, ervaring en mogelijkheid tot toezicht tellen mee.",
+    nextStep: "Controleer vóór uitvoering welke bevoegdheid, bekwaamheid, opdracht en toezicht aantoonbaar aanwezig zijn.",
+    situations: ["besluit-of-contract", "klacht-of-geschil", "acuut-gevaar"],
+  },
+  "politie-taak": {
+    practicalNote: "De algemene politietaak is breed, maar geeft niet in iedere melding recht op dezelfde inzet, snelheid of uitkomst.",
+    nextStep: "Maak duidelijk of je iets wilt melden, aangifte wilt doen, directe hulp nodig hebt of over politieoptreden wilt klagen.",
+    situations: ["acuut-gevaar", "klacht-of-geschil"],
+  },
+  "politie-bevoegdheden": {
+    practicalNote: "Een bevoegdheid mag alleen worden gebruikt wanneer de wettelijke voorwaarden en grenzen in de concrete situatie zijn vervuld.",
+    nextStep: "Noteer welke bevoegdheid is gebruikt, wanneer, door wie en welke reden daarbij is gegeven.",
+    situations: ["klacht-of-geschil", "acuut-gevaar"],
+  },
+  "arbeidscontract-basis": {
+    practicalNote: "Contractvorm, cao, sector, ziekte en verlof kunnen de algemene arbeidsregels aanvullen of de juiste route veranderen.",
+    nextStep: "Verzamel je contract, cao, loonstroken en schriftelijke afspraken en controleer welke termijn nu loopt.",
+    situations: ["besluit-of-contract", "lopende-termijn", "klacht-of-geschil"],
+  },
+  "huurder-contract": {
+    practicalNote: "De bescherming hangt onder meer af van het type woonruimte, de huurprijs, de contractduur en wat schriftelijk is afgesproken.",
+    nextStep: "Bewaar het volledige huurcontract, de bijlagen en informatie die je bij de start van de huur kreeg.",
+    situations: ["besluit-of-contract", "lopende-termijn"],
+  },
+  "huurder-onderhoud": {
+    practicalNote: "Wie het herstel moet uitvoeren hangt af van het soort gebrek. Zonder duidelijke melding is later lastiger vast te stellen wat de verhuurder wist.",
+    nextStep: "Meld het gebrek schriftelijk, voeg foto's en data toe en vraag om een concrete hersteltermijn.",
+    situations: ["klacht-of-geschil", "lopende-termijn"],
+  },
+  "huurder-opzegging": {
+    practicalNote: "Een opzegging beëindigt de huur niet altijd direct. De reden, contractvorm, reactie en eventuele rechterlijke toetsing zijn belangrijk.",
+    nextStep: "Bewaar de opzegging, reageer niet overhaast en controleer direct welke reactie- of proceduretermijn geldt.",
+    situations: ["besluit-of-contract", "lopende-termijn", "klacht-of-geschil"],
+  },
+  "ouder-medisch-dossier-kind": {
+    practicalNote: "De leeftijd van het kind, het gezag en het belang van het kind bepalen wie toestemming geeft en wie het dossier mag inzien.",
+    nextStep: "Controleer de leeftijd, het gezag en over welke gegevens of behandeling de vraag precies gaat.",
+    situations: ["informatie-gedeeld", "besluit-of-contract", "klacht-of-geschil"],
+  },
+};
+
+export const publicRules: PublicRule[] = publicRuleBases.map((rule) => ({
+  ...rule,
+  ...routeMeta[rule.id],
+  sourcePublisher: rule.sourceTitle.split(" — ")[0],
+  sourceCheckedAt: "2026-08-30T00:00:00+00:00",
+}));
 
 export const publicTopics: Array<"Alles" | PublicTopic> = [
   "Alles",
