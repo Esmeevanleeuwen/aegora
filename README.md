@@ -43,7 +43,7 @@ Zonder sleutel blijft de volledige interface bruikbaar en retourneert de API een
 Vul de publishable key van het gekoppelde Supabase-project in `.env.local` in:
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=https://frvkibbrbxiqrlmlfnxc.supabase.co
+NEXT_PUBLIC_SUPABASE_URL=https://lansmpclefejsahufszl.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
