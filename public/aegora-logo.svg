@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 96" role="img" aria-labelledby="title description">
+  <title id="title">AEGORA</title>
+  <desc id="description">Een open letter A met een turquoise persoon in het midden, gevolgd door het woord AEGORA.</desc>
+  <defs>
+    <linearGradient id="aegora-left" x1="10" y1="77" x2="47" y2="13" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7B3FF2" />
+      <stop offset="1" stop-color="#984AF0" />
+    </linearGradient>
+    <linearGradient id="aegora-right" x1="58" y1="13" x2="91" y2="77" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2181F4" />
+      <stop offset="1" stop-color="#2767F2" />
+    </linearGradient>
+  </defs>
+  <path d="M43 15 14 78h29" fill="none" stroke="url(#aegora-left)" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" />
+  <path d="m59 15 29 63H59" fill="none" stroke="url(#aegora-right)" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" />
+  <circle cx="51" cy="58" r="11" fill="#27BFAF" />
+  <text x="117" y="68" fill="#17132B" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="58" font-weight="800" letter-spacing="-1.5">AEGORA</text>
+</svg>
