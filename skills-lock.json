@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "skills": {
+    "contentsquare-android-sdk": {
+      "source": "contentsquare/agents",
+      "sourceType": "github",
+      "skillPath": "skills/contentsquare-android-sdk/SKILL.md",
+      "computedHash": "cd56affc5c864df8eee84beeaac587eed0a547c24c90ba27bb9f38c8e575c978"
+    },
+    "contentsquare-flutter-sdk": {
+      "source": "contentsquare/agents",
+      "sourceType": "github",
+      "skillPath": "skills/contentsquare-flutter-sdk/SKILL.md",
+      "computedHash": "02d3c2611d550e5275e8864d53d3b120b935bd1d8327a5f130dfc097560ff47f"
+    },
+    "contentsquare-ios-sdk": {
+      "source": "contentsquare/agents",
+      "sourceType": "github",
+      "skillPath": "skills/contentsquare-ios-sdk/SKILL.md",
+      "computedHash": "b8a02fc91326fa4b7aa444471d04543cc1c5b42f1d9b5e9e7516d91b54b2afc9"
+    },
+    "contentsquare-react-native-sdk": {
+      "source": "contentsquare/agents",
+      "sourceType": "github",
+      "skillPath": "skills/contentsquare-reactnative-sdk/SKILL.md",
+      "computedHash": "4cff862f50c5a67e89e21ab04e8015e1ef7a05c73c34f09a4793f7b55c59f7b4"
+    },
+    "contentsquare-web-tag-install": {
+      "source": "contentsquare/agents",
+      "sourceType": "github",
+      "skillPath": "skills/contentsquare-web-tag-install/SKILL.md",
+      "computedHash": "cc0226e36f5a654a5ce6d3179b172279df79cac6bfae871f1b51baf954d7cc7b"
+    }
+  }
+}
