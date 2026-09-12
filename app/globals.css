@@ -25,6 +25,8 @@ html {
   scroll-behavior: smooth;
 }
 
+
+
 body {
   margin: 0;
   color: var(--ink);
@@ -33,6 +35,34 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+
+body {
+  --sb-track-color: #07080b;
+  --sb-thumb-color: #8997fffb;
+  --sb-size: 9px;
+}
+
+body::-webkit-scrollbar {
+  width: var(--sb-size)
+}
+
+body::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 320px;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb-color);
+  border-radius: 3px;
+  
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  body {
+    scrollbar-color: var(--sb-thumb-color)
+                     var(--sb-track-color);
+  }
+}
 button,
 textarea,
 select {

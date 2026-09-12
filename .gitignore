@@ -6,3 +6,6 @@ out
 .DS_Store
 *.log
 *.tsbuildinfo
+
+# Contentsquare wizard (generated)
+.cs-wizard/
