@@ -6,7 +6,7 @@ import { useState } from "react";
 import { BrandMark } from "./brand-mark";
 
 type SiteHeaderProps = {
-  active?: "home" | "library" | "basics" | "rights" | "question" | "account";
+  active?: "home" | "library" | "basics" | "rights" | "question" | "account" | "about";
 };
 
 export function SiteHeader({ active = "home" }: SiteHeaderProps) {
@@ -17,18 +17,11 @@ export function SiteHeader({ active = "home" }: SiteHeaderProps) {
       <Link className="brand" href="/" aria-label="AEGORA homepage">
         <BrandMark />
       </Link>
-      <nav className={open ? "nav-open" : ""} aria-label="Hoofdnavigatie">
-        {active === "home" ? <>
-          <Link href="/#waarom" onClick={() => setOpen(false)}>Waarom Aegora</Link>
-          <Link href="/#onderzoek" onClick={() => setOpen(false)}>Onderzoek</Link>
-          <Link href="/#werking" onClick={() => setOpen(false)}>Onze werkwijze</Link>
-          <Link href="/rechten" onClick={() => setOpen(false)}>Alle rechten</Link>
-        </> : <>
+      <nav id="site-navigation" className={open ? "nav-open" : ""} aria-label="Hoofdnavigatie">
         <Link aria-current={active === "library" ? "page" : undefined} href="/rechten" onClick={() => setOpen(false)}>Alle rechten</Link>
         <Link aria-current={active === "basics" ? "page" : undefined} href="/basisrechten" onClick={() => setOpen(false)}>Basisrechten</Link>
         <Link aria-current={active === "question" ? "page" : undefined} href="/vraag" onClick={() => setOpen(false)}>Vraag het de AI</Link>
-        <Link href="/#werking" onClick={() => setOpen(false)}>Onze werkwijze</Link>
-        </>}
+        <Link aria-current={active === "about" ? "page" : undefined} href="/waarom-aegora" onClick={() => setOpen(false)}>Waarom Aegora</Link>
       </nav>
       <Link className="overview-button" aria-current={active === "account" ? "page" : undefined} href="/account">
         <CircleUserRound size={17} /> Mijn account
@@ -38,6 +31,7 @@ export function SiteHeader({ active = "home" }: SiteHeaderProps) {
         type="button"
         aria-label={open ? "Menu sluiten" : "Menu openen"}
         aria-expanded={open}
+        aria-controls="site-navigation"
         onClick={() => setOpen((value) => !value)}
       >
         {open ? <X /> : <Menu />}
