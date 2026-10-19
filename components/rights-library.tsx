@@ -21,6 +21,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import Link from "next/link";
+import { RightLink } from "@/components/rights-network-provider";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "@/components/site-header";
@@ -58,7 +59,7 @@ type RightsLibraryProps = Pick<
 >;
 
 function appliesToRole(rule: PublicRule, role: PublicRoleId) {
-  return rule.roles.includes(role) || (role !== "iedereen" && rule.roles.includes("iedereen"));
+  return role === "iedereen" || rule.roles.includes(role) || rule.roles.includes("iedereen");
 }
 
 function buildRuleCounts(roles: PublicRole[], rules: PublicRule[]) {
@@ -188,6 +189,11 @@ export function RightsLibrary({ roles, rules, situations, topics, dataSource }: 
         </div>
       </section>
 
+      <Link className="rights-network-entry rights-network-library-entry" href="/rechten/netwerk">
+        <span><strong>Ontdek hoe rechten samenhangen</strong><small>Volg verbanden en maak je eigen combinatie.</small></span>
+        <ChevronRight size={20} aria-hidden="true" />
+      </Link>
+
       <section className="library-browser">
         <aside className="role-selector" aria-label="Kies je rol">
           <div className="selector-heading"><span>1. Ik bekijk dit als</span><small>Geen account nodig</small></div>
@@ -210,7 +216,7 @@ export function RightsLibrary({ roles, rules, situations, topics, dataSource }: 
         <div className="library-results">
           {currentRole ? (
             <div className="selected-role-heading">
-              <div><span className="eyebrow">Openbare informatie voor</span><h2>{currentRole.label}</h2><p>{currentRole.description}</p></div>
+              <div><span className="eyebrow">Openbare informatie voor</span><h2>{role === "iedereen" ? "Iedereen · alle rollen" : currentRole.label}</h2><p>{role === "iedereen" ? "Bekijk alle beschikbare rechten. Kies alleen een rol als je gerichter wilt zoeken." : currentRole.description}</p></div>
               <Link href="/basisrechten">Bekijk basisrechten <ExternalLink size={13} /></Link>
             </div>
           ) : null}
@@ -240,6 +246,7 @@ export function RightsLibrary({ roles, rules, situations, topics, dataSource }: 
             <div><span>Stap 3</span><strong>Kies eventueel een onderwerp</strong></div>
             <small>{currentSituation?.label ?? "Alle situaties"} · {visibleRules.length} resultaten</small>
           </div>
+          {(role !== firstRole || situation !== "alles" || topic !== "Alles" || query) && <button className="rights-clear-filters" type="button" onClick={() => { setRole(firstRole); setSituation("alles"); setTopic("Alles"); setQuery(""); }}>Wis filters</button>}
           <div className="topic-filter" role="group" aria-label="Filter op rechtsgebied">
             {topics.map((item) => <button key={item} type="button" className={topic === item ? "active" : ""} aria-pressed={topic === item} onClick={() => setTopic(item)}>{item}</button>)}
           </div>
@@ -252,7 +259,7 @@ export function RightsLibrary({ roles, rules, situations, topics, dataSource }: 
               return (
                 <article className="public-rule-card" key={rule.id}>
                   <div className="rule-card-topline"><span className={`rule-type rule-type-${rule.type}`}>{typeLabels[rule.type]}</span><span>{rule.topic}</span></div>
-                  <h3>{rule.title}</h3>
+                  <h3><RightLink rightId={rule.id} fallbackQuery={rule.title} className="right-network-link">{rule.title}</RightLink></h3>
                   <p>{rule.summary}</p>
                   <dl>
                     <div><dt>Wanneer geldt dit?</dt><dd>{rule.appliesWhen}</dd></div>
@@ -267,6 +274,7 @@ export function RightsLibrary({ roles, rules, situations, topics, dataSource }: 
                       {isSaved ? "Opgeslagen" : "Bewaren"}
                     </button>
                   </div>
+                  <RightLink rightId={rule.id} className="rights-network-card-action">Bekijk verbanden <ChevronRight size={15} aria-hidden="true" /></RightLink>
                 </article>
               );
             }) : (
@@ -293,3 +301,4 @@ export function RightsLibrary({ roles, rules, situations, topics, dataSource }: 
     </main>
   );
 }
+
