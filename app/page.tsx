@@ -21,9 +21,9 @@ import {
   Users,
 } from "lucide-react";
 import { FormEvent, useState } from "react";
+import Link from "next/link";
+import styles from "./home.module.css";
 import { BrandMark } from "@/components/brand-mark";
-import { MissionIntroduction, MissionParticipation, MissionResearch } from "@/components/home-mission";
-import styles from "@/components/home-mission.module.css";
 import { SiteHeader } from "@/components/site-header";
 import { publicSituations } from "@/lib/public-rights-data";
 import { domains, rightsCatalog, statusLabels } from "@/lib/rights-data";
@@ -197,26 +197,19 @@ export default function HomePage() {
     <main className={styles.page}>
       <SiteHeader />
 
-      <MissionIntroduction />
-      <MissionResearch />
-      <MissionParticipation />
-
-      <section className={styles.tools} id="hulpmiddelen" aria-labelledby="tools-title">
-        <div className={styles.toolsIntro}>
-          <span className={styles.eyebrow}>Zelf inzicht krijgen</span>
-          <h2 id="tools-title">Begin bij je vraag.<br />Verken je rechten.</h2>
+      <section className="hero" id="start">
+        <div className="hero-copy">
+          <span className="eyebrow"><span className="live-dot" /> Rechten helder uitgelegd</span>
+          <h1>Weet waar je<br /><em>recht</em> op hebt.</h1>
           <p>
-            Naast onderzoek biedt Aegora een eerste ingang naar informatie over rechten,
-            voorwaarden en mogelijke vervolgstappen. Je kunt zonder account beginnen.
-          </p>
-          <p>
-            Beschrijf je situatie zonder namen, dossiernummers of andere herkenbare gegevens.
-            Deze rechtencheck is geen inzending voor ons onderzoek.
+            Algemene rechten voor iedereen, duidelijk uitgelegd per onderwerp, rol en situatie.
+            Zonder dat je eerst het juiste loket of wetsartikel hoeft te kennen.
           </p>
           <div className="trust-row">
             <span><Shield size={18} /> Bron vóór antwoord</span>
             <span><LockKeyhole size={18} /> Zonder account beginnen</span>
           </div>
+          <Link className={styles.aboutLink} href="/waarom-aegora">Waarom Aegora <ArrowRight size={16} aria-hidden="true" /></Link>
         </div>
 
         <form className="question-card" id="vraag" onSubmit={askQuestion}>
@@ -232,7 +225,7 @@ export default function HomePage() {
             id="question"
             value={question}
             onChange={(event) => setQuestion(event.target.value)}
-            placeholder="Bijvoorbeeld: welke rechten gelden bij huisregels in begeleid wonen?"
+            placeholder="Bijvoorbeeld: mijn verhuurder herstelt een ernstig gebrek niet. Wat kan ik doen?"
             minLength={10}
             maxLength={2500}
             required
@@ -345,10 +338,39 @@ export default function HomePage() {
         ) : null}
       </section>
 
-      <footer className={styles.footer}>
+      <section className="method-section" id="werking">
+        <div className="method-intro">
+          <span className="eyebrow">Geen losse chatbot</span>
+          <h2>Van vraag naar een<br />controleerbare vervolgstap.</h2>
+          <p>
+            Aegora helpt je om je vraag te verkennen met uitleg, rechten en bronverwijzingen.
+            Controleer altijd welke voorwaarden en uitzonderingen bij jouw situatie horen.
+          </p>
+        </div>
+        <ol className="method-steps">
+          <li><span>01</span><div><strong>Situatie</strong><p>Je beschrijft wat er gebeurde en kiest zelf relevante context.</p></div></li>
+          <li><span>02</span><div><strong>Bronnen</strong><p>Je krijgt bronverwijzingen om de uitleg zelf na te lezen.</p></div></li>
+          <li><span>03</span><div><strong>Toepassen</strong><p>Je bekijkt welke voorwaarden en uitzonderingen van belang kunnen zijn.</p></div></li>
+          <li><span>04</span><div><strong>Handelen</strong><p>Je verkent een mogelijke volgende stap en welke informatie daarvoor nodig is.</p></div></li>
+        </ol>
+      </section>
+
+      <section className="sources-section" id="bronnen">
+        <div>
+          <span className="eyebrow">Brontransparantie</span>
+          <h2>Geen bron,<br />geen stellige conclusie.</h2>
+        </div>
+        <div className="source-principles">
+          <article><Database /><strong>Bronnen zelf nalezen</strong><p>Volg de bronverwijzingen en controleer of de informatie nog actueel is.</p></article>
+          <article><CircleAlert /><strong>Ruimte voor onzekerheid</strong><p>Een eerste uitleg kan onvolledig zijn. Ontbrekende feiten kunnen de uitkomst veranderen.</p></article>
+          <article><LockKeyhole /><strong>Deel alleen wat nodig is</strong><p>Beschrijf je vraag zonder namen, dossiernummers of andere herkenbare gegevens.</p></article>
+        </div>
+      </section>
+
+      <footer>
         <a className="brand footer-brand" href="#start" aria-label="Aegora, terug naar boven"><BrandMark /></a>
-        <p>Onafhankelijk onderzoek en rechtsbescherming. Omdat de rechten van één mens ons allemaal raken.</p>
-        <a href="#jouw-stem">Jouw stem telt <ArrowRight size={15} aria-hidden="true" /></a>
+        <p>Inzicht in je rechten. Aandacht voor wat erachter ligt.</p>
+        <Link href="/waarom-aegora">Waarom Aegora <ArrowRight size={15} aria-hidden="true" /></Link>
       </footer>
     </main>
   );
