@@ -301,7 +301,7 @@ export default function HomePage() {
           </p>
         </div>
 
-        <Link className="rights-network-entry" href="/rechten/netwerk"><span><strong>Verken het rechtennetwerk</strong><small>Volg verbanden tussen rechten en bewaar je eigen combinatie.</small></span><ArrowRight size={20} aria-hidden="true" /></Link>
+        <Link className="rights-network-entry" href="/rechten/verkennen"><span><strong>Ontdek hoe rechten samenhangen</strong><small>Zoek een recht en volg de onderbouwde verbindingen.</small></span><ArrowRight size={20} aria-hidden="true" /></Link>
 
         <div className="domain-grid" role="list" aria-label="Rechtsgebieden">
           {domains.map((domain) => {

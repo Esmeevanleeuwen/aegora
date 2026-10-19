@@ -8,7 +8,7 @@ export default function RightNotFound() {
       <div className="rights-network-shell rights-network-heading">
         <h1>Dit recht is niet gevonden.</h1>
         <p>Deze link kan verouderd zijn. Zoek verder in de rechtenbibliotheek of verken de opgeslagen verbanden.</p>
-        <Link className="rights-network-entry" href="/rechten/netwerk">Open het rechtennetwerk</Link>
+        <Link className="rights-network-entry" href="/rechten/verkennen">Open de rechtenverkenner</Link>
       </div>
     </main>
   );

@@ -19,7 +19,7 @@ export function SiteHeader({ active = "home" }: SiteHeaderProps) {
       </Link>
       <nav id="site-navigation" className={open ? "nav-open" : ""} aria-label="Hoofdnavigatie">
         <Link aria-current={active === "library" ? "page" : undefined} href="/rechten" onClick={() => setOpen(false)}>Alle rechten</Link>
-        <Link aria-current={active === "network" ? "page" : undefined} href="/rechten/netwerk" onClick={() => setOpen(false)}>Rechtennetwerk</Link>
+        <Link aria-current={active === "network" ? "page" : undefined} href="/rechten/verkennen" onClick={() => setOpen(false)}>Rechten verkennen</Link>
         <Link aria-current={active === "basics" ? "page" : undefined} href="/basisrechten" onClick={() => setOpen(false)}>Basisrechten</Link>
         <Link aria-current={active === "question" ? "page" : undefined} href="/vraag" onClick={() => setOpen(false)}>Vraag het de AI</Link>
         <Link aria-current={active === "about" ? "page" : undefined} href="/waarom-aegora" onClick={() => setOpen(false)}>Waarom Aegora</Link>

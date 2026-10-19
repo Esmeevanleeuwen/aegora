@@ -59,7 +59,7 @@ export default function BasicRightsPage() {
         </aside>
       </section>
 
-      <Link className="rights-network-entry rights-network-library-entry" href="/rechten/netwerk"><span><strong>Basisrechten staan met andere rechten in verbinding.</strong><small>Klik op een recht om de verbanden te verkennen.</small></span><ArrowRight size={20} aria-hidden="true" /></Link>
+      <Link className="rights-network-entry rights-network-library-entry" href="/rechten/verkennen"><span><strong>Basisrechten staan met andere rechten in verbinding.</strong><small>Klik op een recht om de verbanden te verkennen.</small></span><ArrowRight size={20} aria-hidden="true" /></Link>
 
       <section className="basic-rights-content">
         <div className="basic-filter-wrap">
@@ -90,7 +90,7 @@ export default function BasicRightsPage() {
                     </section>
                     <section>
                       <h3>Waar speelt dit vaak?</h3>
-                      <div className="area-tags">{right.commonAreas.map((area) => <Link key={area} href={`/rechten/netwerk?zoek=${encodeURIComponent(area)}`}>{area}</Link>)}</div>
+                      <div className="area-tags">{right.commonAreas.map((area) => <Link key={area} href={`/rechten/verkennen?q=${encodeURIComponent(area)}`}>{area}</Link>)}</div>
                     </section>
                   </div>
 
