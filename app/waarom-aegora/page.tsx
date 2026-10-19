@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
+import {
+  ArrowLeft, ArrowRight, ArrowUpRight, Check, FileSearch, Fingerprint,
+  GitBranch, House, Landmark, MessageCircle, Scale, Search, ShieldCheck,
+  Users, Waypoints,
+} from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
 import { SiteHeader } from "@/components/site-header";
+import { StoryNavigation } from "./story-navigation";
 import styles from "./waarom.module.css";
 
 export const metadata: Metadata = {
@@ -11,26 +16,29 @@ export const metadata: Metadata = {
 };
 
 const chapters = [
-  { id: "waarom", title: "Waarom dit iedereen raakt" },
-  { id: "onderzoek", title: "Waarom we bij de zorg beginnen" },
-  { id: "samenhang", title: "Verder kijken dan één situatie" },
-  { id: "werking", title: "Hoe we onderzoeken" },
-  { id: "jouw-stem", title: "De betekenis van jouw stem" },
+  { id: "waarom", title: "Waarom dit iedereen raakt", shortTitle: "Ons uitgangspunt" },
+  { id: "onderzoek", title: "Waarom we bij de zorg beginnen", shortTitle: "Onze eerste focus" },
+  { id: "samenhang", title: "Verder kijken dan één situatie", shortTitle: "Het grotere geheel" },
+  { id: "werking", title: "Hoe we onderzoeken", shortTitle: "Onze werkwijze" },
+  { id: "jouw-stem", title: "De betekenis van jouw stem", shortTitle: "Jouw stem" },
 ];
 
 const researchAreas = [
   {
     title: "Gesloten zorg",
+    icon: ShieldCheck,
     text: "Waar zorg samengaat met het beperken van vrijheid, worden beslissingen bijzonder ingrijpend. We willen onderzoeken waarop maatregelen berusten, hoe hun noodzaak wordt beoordeeld en of ze opnieuw worden overwogen wanneer omstandigheden veranderen. Daarbij kijken we naar informatie, zeggenschap, mogelijkheden om een beslissing te betwisten en de onafhankelijkheid van de controle daarop.",
     question: "Wie bewaakt de grenzen wanneer vrijheid wordt beperkt?",
   },
   {
     title: "Jeugdzorg",
+    icon: Users,
     text: "Beslissingen over hulpverlening en plaatsing kunnen het leven van kinderen, jongeren en gezinnen langdurig bepalen. We willen begrijpen hoe hun ervaringen worden gehoord, welke informatie in dossiers terechtkomt en hoe vermoedens, waarnemingen en conclusies uit elkaar worden gehouden. Ook onderzoeken we hoe verschillende organisaties informatie overnemen en hoe een onjuist of onvolledig beeld kan worden rechtgezet.",
     question: "Welke stem krijgen de mensen over wie wordt beslist?",
   },
   {
     title: "Beschermd en begeleid wonen",
+    icon: House,
     text: "Wonen en ondersteuning raken aan privacy, zelfstandigheid en de ruimte om eigen keuzes te maken. We onderzoeken hoe afspraken, huisregels en begeleiding doorwerken in het dagelijks leven. Daarbij vragen we wie de grenzen bepaalt, welke ruimte er is voor verschil van mening en hoe iemand een klacht kan bespreken wanneer diegene voor zijn woonplek of ondersteuning van dezelfde organisatie afhankelijk is.",
     question: "Hoe blijft een thuis ook een plek waar je zelf zeggenschap hebt?",
   },
@@ -66,10 +74,13 @@ const researchSteps = [
 export default function WhyAegoraPage() {
   return (
     <div className={styles.page}>
+      <a className={styles.skipLink} href="#waarom">Ga naar het verhaal</a>
       <SiteHeader active="about" />
       <main id="start" className={styles.main}>
         <header className={styles.hero}>
           <Link className={styles.backLink} href="/"><ArrowLeft size={15} aria-hidden="true" /> Naar de homepage</Link>
+          <div className={styles.heroGrid}>
+          <div className={styles.heroCopy}>
           <p className={styles.eyebrow}>Waarom Aegora</p>
           <h1>De rechten van één mens <span>raken ons allemaal.</span></h1>
           <p className={styles.lead}>
@@ -78,30 +89,41 @@ export default function WhyAegoraPage() {
             beslissing ingaat. Aegora ontstaat vanuit de overtuiging dat die bescherming
             een verantwoordelijkheid van ons allemaal is.
           </p>
-          <div className={styles.heroFoot}>
-            <span>Onafhankelijk onderzoek & rechtsbescherming</span>
+          <div className={styles.heroActions}>
             <a href="#waarom">Lees ons verhaal <ArrowRight size={16} aria-hidden="true" /></a>
+            <Link href="/rechten">Verken je rechten <ArrowUpRight size={16} aria-hidden="true" /></Link>
+          </div>
+          </div>
+          <div className={styles.heroArt} aria-hidden="true">
+            <div className={styles.artGlow} />
+            <div className={styles.artOrbit} />
+            <div className={styles.shieldScene}>
+              <div className={styles.shieldBack} />
+              <div className={styles.shieldFront}>
+                <ShieldCheck strokeWidth={1.1} />
+                <span>Vrijheid verdient bescherming.</span>
+              </div>
+            </div>
+            <div className={styles.artLabelTop}><Fingerprint size={19} /> Ieder mens telt</div>
+            <div className={styles.artLabelBottom}><Scale size={19} /> Dezelfde rechtsbescherming</div>
+          </div>
+          </div>
+          <div className={styles.heroFoot}>
+            <span><ShieldCheck size={17} aria-hidden="true" /> Rechten begrijpen</span>
+            <span><Search size={17} aria-hidden="true" /> Onafhankelijk onderzoeken</span>
+            <span><Waypoints size={17} aria-hidden="true" /> Samenhang zichtbaar maken</span>
           </div>
         </header>
 
         <div className={styles.readingLayout}>
           <aside className={styles.contents}>
-            <nav aria-label="Op deze pagina">
-              <p className={styles.contentsLabel}>In dit verhaal</p>
-              <ol>
-                {chapters.map((chapter, index) => (
-                  <li key={chapter.id}>
-                    <a href={`#${chapter.id}`}><span aria-hidden="true">0{index + 1}</span>{chapter.title}</a>
-                  </li>
-                ))}
-              </ol>
-            </nav>
-            <p className={styles.sideNote}>Een samenleving waarin je rechten ook in de praktijk bescherming bieden.</p>
+            <StoryNavigation chapters={chapters} />
+            <p className={styles.sideNote}><ShieldCheck size={20} aria-hidden="true" />Een samenleving waarin je rechten ook in de praktijk bescherming bieden.</p>
           </aside>
 
           <article className={styles.story} aria-label="Het verhaal achter Aegora">
             <section id="waarom" aria-labelledby="why-title" className={styles.chapter}>
-              <p className={styles.chapterNumber}>01 / Ons uitgangspunt</p>
+              <p className={styles.chapterNumber}><Landmark size={19} aria-hidden="true" /> 01 / Ons uitgangspunt</p>
               <h2 id="why-title">Waarom dit iedereen raakt</h2>
               <p>
                 Wanneer de rechten van een mens worden geschonden, blijft de betekenis daarvan
@@ -149,12 +171,13 @@ export default function WhyAegoraPage() {
                 Meer over de democratische rechtsstaat · Rijksoverheid <ArrowUpRight size={15} aria-hidden="true" />
               </a>
               <blockquote className={styles.pullQuote}>
+                <span aria-hidden="true">“</span>
                 Wat één mens overkomt,<br />kan ieder ander overkomen.
               </blockquote>
             </section>
 
             <section id="onderzoek" aria-labelledby="research-title" className={styles.chapter}>
-              <p className={styles.chapterNumber}>02 / Onze eerste focus</p>
+              <p className={styles.chapterNumber}><ShieldCheck size={19} aria-hidden="true" /> 02 / Onze eerste focus</p>
               <h2 id="research-title">Waarom we bij de zorg beginnen</h2>
               <p>
                 In de zorg komen bescherming, afhankelijkheid en beslissingen over het dagelijks
@@ -176,13 +199,20 @@ export default function WhyAegoraPage() {
                 en controle des te belangrijker. We beginnen met drie gebieden.
               </p>
               <div className={styles.areas}>
-                {researchAreas.map((area) => (
-                  <section className={styles.area} key={area.title}>
-                    <h3>{area.title}</h3>
-                    <p>{area.text}</p>
-                    <p className={styles.researchQuestion}>{area.question}</p>
-                  </section>
-                ))}
+                {researchAreas.map((area, index) => {
+                  const Icon = area.icon;
+                  return (
+                    <section className={styles.area} key={area.title}>
+                      <div className={styles.areaIcon}><Icon size={25} strokeWidth={1.6} aria-hidden="true" /></div>
+                      <div className={styles.areaBody}>
+                        <span className={styles.areaNumber}>Onderzoeksgebied 0{index + 1}</span>
+                        <h3>{area.title}</h3>
+                        <p>{area.text}</p>
+                        <p className={styles.researchQuestion}><MessageCircle size={17} aria-hidden="true" />{area.question}</p>
+                      </div>
+                    </section>
+                  );
+                })}
               </div>
               <p>
                 De zorg is ons vertrekpunt binnen een bredere maatschappelijke vraag. Hoe we omgaan
@@ -194,7 +224,7 @@ export default function WhyAegoraPage() {
             </section>
 
             <section id="samenhang" aria-labelledby="connections-title" className={styles.chapter}>
-              <p className={styles.chapterNumber}>03 / Het grotere geheel</p>
+              <p className={styles.chapterNumber}><GitBranch size={19} aria-hidden="true" /> 03 / Het grotere geheel</p>
               <h2 id="connections-title">Verder kijken dan één situatie</h2>
               <p>
                 Een ervaring ontstaat niet los van haar omgeving. Regels beïnvloeden beslissingen,
@@ -246,7 +276,7 @@ export default function WhyAegoraPage() {
             </section>
 
             <section id="werking" aria-labelledby="method-title" className={styles.chapter}>
-              <p className={styles.chapterNumber}>04 / Onze werkwijze</p>
+              <p className={styles.chapterNumber}><FileSearch size={19} aria-hidden="true" /> 04 / Onze werkwijze</p>
               <h2 id="method-title">De waarheid vraagt om meer dan één perspectief</h2>
               <p>
                 Onze overtuiging is dat we dichter bij de waarheid komen door een onderwerp zo
@@ -270,8 +300,11 @@ export default function WhyAegoraPage() {
                 ))}
               </ol>
               <aside className={styles.principle} aria-label="Ons onderzoeksprincipe">
+                <span className={styles.principleIcon}><Check size={21} aria-hidden="true" /></span>
+                <div>
                 <strong>De uitkomst staat niet vooraf vast.</strong>
                 <p>Ook informatie die een eerste vermoeden tegenspreekt, moet worden meegewogen. Ervaringen, interpretaties en vastgestelde feiten blijven van elkaar te onderscheiden.</p>
+                </div>
               </aside>
               <h3 className={styles.subheading}>Onafhankelijkheid moet zichtbaar zijn in het werk</h3>
               <p>
@@ -293,7 +326,7 @@ export default function WhyAegoraPage() {
             </section>
 
             <section id="jouw-stem" aria-labelledby="voice-title" className={styles.chapter}>
-              <p className={styles.chapterNumber}>05 / Samen verantwoordelijkheid dragen</p>
+              <p className={styles.chapterNumber}><MessageCircle size={19} aria-hidden="true" /> 05 / Samen verantwoordelijkheid dragen</p>
               <h2 id="voice-title">Jij bent nooit alleen.</h2>
               <p>
                 Veel mensen voelen zich alleen met hun problemen, omdat zij ervaren dat er niet
@@ -330,11 +363,13 @@ export default function WhyAegoraPage() {
                 rechtszekerheid van iedereen beter te beschermen.
               </p>
               <div className={styles.participation}>
+                <MessageCircle className={styles.participationIcon} size={30} strokeWidth={1.5} aria-hidden="true" />
                 <span className={styles.status}>In voorbereiding</span>
                 <h3>Een plek voor jouw verhaal</h3>
                 <p>Je kunt hier nog geen ervaring of klacht insturen. We werken toe naar een route waarin je zelf kiest wat je deelt en of je naam zichtbaar wordt.</p>
                 <Link className={styles.actionLink} href="/rechten">Verken je rechten <ArrowRight size={17} aria-hidden="true" /></Link>
               </div>
+              <a className={styles.backToTop} href="#start">Terug naar het begin <ArrowUpRight size={16} aria-hidden="true" /></a>
             </section>
           </article>
         </div>
@@ -347,3 +382,4 @@ export default function WhyAegoraPage() {
     </div>
   );
 }
+
