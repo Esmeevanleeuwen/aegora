@@ -189,7 +189,7 @@ export function RightsLibrary({ roles, rules, situations, topics, dataSource }: 
         </div>
       </section>
 
-      <Link className="rights-network-entry rights-network-library-entry" href="/rechten/netwerk">
+      <Link className="rights-network-entry rights-network-library-entry" href="/rechten/verkennen">
         <span><strong>Ontdek hoe rechten samenhangen</strong><small>Volg verbanden en maak je eigen combinatie.</small></span>
         <ChevronRight size={20} aria-hidden="true" />
       </Link>
