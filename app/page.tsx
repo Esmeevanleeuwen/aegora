@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { FormEvent, useState } from "react";
 import Link from "next/link";
+import { RightLink } from "@/components/rights-network-provider";
 import styles from "./home.module.css";
 import { BrandMark } from "@/components/brand-mark";
 import { SiteHeader } from "@/components/site-header";
@@ -60,7 +61,7 @@ function RightCard({ right }: { right: RightItem }) {
           <Clock3 size={14} /> {right.sourceDate}
         </span>
       </div>
-      <h3>{right.title}</h3>
+      <h3><RightLink rightId={right.id} fallbackQuery={right.title} className="right-network-link">{right.title}</RightLink></h3>
       <p>{right.summary}</p>
       <div className="right-action">
         <span className="action-number">1</span>
@@ -109,7 +110,7 @@ function AnswerPanel({ answer }: { answer: RightsAnswer }) {
         <div className="answer-block">
           <span className="answer-index">01</span>
           <h3>Rechten die mogelijk gelden</h3>
-          <ul>{answer.rights.map((right) => <li key={right.id}>{right.title}</li>)}</ul>
+          <ul>{answer.rights.map((right) => <li key={right.id}><RightLink rightId={right.id} fallbackQuery={right.title} className="right-network-link">{right.title}</RightLink></li>)}</ul>
         </div>
         <div className="answer-block">
           <span className="answer-index">02</span>
@@ -300,6 +301,8 @@ export default function HomePage() {
           </p>
         </div>
 
+        <Link className="rights-network-entry" href="/rechten/netwerk"><span><strong>Verken het rechtennetwerk</strong><small>Volg verbanden tussen rechten en bewaar je eigen combinatie.</small></span><ArrowRight size={20} aria-hidden="true" /></Link>
+
         <div className="domain-grid" role="list" aria-label="Rechtsgebieden">
           {domains.map((domain) => {
             const Icon = iconByDomain[domain.name];
@@ -375,3 +378,4 @@ export default function HomePage() {
     </main>
   );
 }
+

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
+import { RightsNetworkProvider } from "@/components/rights-network-provider";
+import { getRightsGraph } from "@/lib/rights-network-repository";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -8,13 +10,15 @@ export const metadata: Metadata = {
     "Verken je rechten per onderwerp, rol en situatie. Aegora verbindt toegankelijke informatie met onafhankelijk onderzoek en rechtsbescherming.",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const graph = await getRightsGraph();
   return (
     <html lang="nl">
       <body>
-        {children}
+        <RightsNetworkProvider graph={graph}>{children}</RightsNetworkProvider>
         <Analytics />
       </body>
     </html>
   );
 }
+

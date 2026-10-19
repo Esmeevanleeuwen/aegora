@@ -2,6 +2,7 @@
 
 import { ArrowLeft, ArrowRight, Check, CircleAlert, ExternalLink, LoaderCircle, LockKeyhole, RotateCcw, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { RightLink } from "@/components/rights-network-provider";
 import { FormEvent, useState } from "react";
 import { SiteHeader } from "@/components/site-header";
 import { publicSituations } from "@/lib/public-rights-data";
@@ -211,7 +212,7 @@ export default function QuestionPage() {
               )}
 
               <div className="result-sections">
-                <section><span>01</span><h3>Wat geldt mogelijk?</h3><ul>{answer.rights.map((right) => <li key={right.id}>{right.title}</li>)}</ul></section>
+                <section><span>01</span><h3>Wat geldt mogelijk?</h3><ul>{answer.rights.map((right) => <li key={right.id}><RightLink rightId={right.id} fallbackQuery={right.title} className="right-network-link">{right.title}</RightLink></li>)}</ul></section>
                 <section><span>02</span><h3>Wat kun je nu doen?</h3><ol>{answer.nextSteps.map((item) => <li key={item}>{item}</li>)}</ol></section>
               </div>
               <div className="result-sources"><strong>Gebruikte officiële bronnen en vindplaatsen</strong>{answer.sources.map((source) => <a key={source.chunkKey ?? `${source.url}-${source.locator ?? "bron"}`} href={source.url} target="_blank" rel="noreferrer"><span>{source.title}{source.locator && <small>{source.locator}</small>}</span><ExternalLink size={13} /></a>)}</div>
@@ -224,3 +225,4 @@ export default function QuestionPage() {
     </main>
   );
 }
+

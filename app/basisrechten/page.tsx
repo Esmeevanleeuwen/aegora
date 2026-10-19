@@ -16,6 +16,7 @@ import {
   Vote,
 } from "lucide-react";
 import Link from "next/link";
+import { RightLink } from "@/components/rights-network-provider";
 import { useState } from "react";
 import { SiteHeader } from "@/components/site-header";
 import { basicRights, type BasicRightId } from "@/lib/basic-rights-data";
@@ -58,6 +59,8 @@ export default function BasicRightsPage() {
         </aside>
       </section>
 
+      <Link className="rights-network-entry rights-network-library-entry" href="/rechten/netwerk"><span><strong>Basisrechten staan met andere rechten in verbinding.</strong><small>Klik op een recht om de verbanden te verkennen.</small></span><ArrowRight size={20} aria-hidden="true" /></Link>
+
       <section className="basic-rights-content">
         <div className="basic-filter-wrap">
           <span>Kies een onderwerp</span>
@@ -77,17 +80,17 @@ export default function BasicRightsPage() {
                 <div className={`basic-right-icon basic-right-icon-${right.id}`}><Icon size={22} /></div>
                 <div className="basic-right-main">
                   <span className="basic-status"><Check size={13} /> Wettelijk beschermd</span>
-                  <h2>{right.title}</h2>
+                  <h2><RightLink rightId={right.id} fallbackQuery={right.title} className="right-network-link">{right.title}</RightLink></h2>
                   <p>{right.summary}</p>
 
                   <div className="basic-card-columns">
                     <section>
                       <h3>Dit mag je verwachten</h3>
-                      <ul>{right.protectedRights.map((item) => <li key={item}>{item}</li>)}</ul>
+                      <ul>{right.protectedRights.map((item) => <li key={item}><RightLink rightId={right.id} className="right-network-link">{item}</RightLink></li>)}</ul>
                     </section>
                     <section>
                       <h3>Waar speelt dit vaak?</h3>
-                      <div className="area-tags">{right.commonAreas.map((area) => <span key={area}>{area}</span>)}</div>
+                      <div className="area-tags">{right.commonAreas.map((area) => <Link key={area} href={`/rechten/netwerk?zoek=${encodeURIComponent(area)}`}>{area}</Link>)}</div>
                     </section>
                   </div>
 
@@ -121,3 +124,4 @@ export default function BasicRightsPage() {
     </main>
   );
 }
+

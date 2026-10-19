@@ -24,6 +24,7 @@ import {
   UploadCloud,
 } from "lucide-react";
 import Link from "next/link";
+import { RightLink } from "@/components/rights-network-provider";
 import { type FormEvent, useMemo, useState } from "react";
 import { logout } from "@/app/auth/actions";
 import { createClient } from "@/lib/supabase/client";
@@ -408,7 +409,7 @@ export function AccountDashboard({
                 {savedRights.map((savedRight) => (
                   <article key={savedRight.id}>
                     <div className="saved-right-topline"><span>{savedRight.right.topic}</span><small>{savedRight.right.type}</small></div>
-                    <h3>{savedRight.right.title}</h3>
+                    <h3><RightLink rightId={savedRight.right.id} fallbackQuery={savedRight.right.title} className="right-network-link">{savedRight.right.title}</RightLink></h3>
                     <p>{savedRight.right.summary}</p>
                     <div className="saved-right-next"><strong>Wat kun je nu doen?</strong><p>{savedRight.right.nextStep}</p></div>
                     <div className="saved-right-actions">
@@ -494,3 +495,4 @@ export function AccountDashboard({
     </section>
   );
 }
+

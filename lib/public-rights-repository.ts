@@ -1,6 +1,7 @@
 import "server-only";
 
 import { z } from "zod";
+import { cache } from "react";
 import {
   publicRoles,
   publicRules,
@@ -87,7 +88,7 @@ async function readJson(response: Response) {
   return response.json() as Promise<unknown>;
 }
 
-export async function getPublicRightsData(): Promise<PublicRightsData> {
+export const getPublicRightsData = cache(async (): Promise<PublicRightsData> => {
   const config = getSupabaseConfig();
   if (!config) return localData;
 
@@ -97,6 +98,7 @@ export async function getPublicRightsData(): Promise<PublicRightsData> {
       Authorization: `Bearer ${config.key}`,
     },
     next: { revalidate: 3600 },
+    signal: AbortSignal.timeout(4000),
   });
 
   try {
@@ -146,4 +148,5 @@ export async function getPublicRightsData(): Promise<PublicRightsData> {
     );
     return localData;
   }
-}
+});
+

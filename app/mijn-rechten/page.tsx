@@ -14,6 +14,7 @@ import {
   UserRound,
 } from "lucide-react";
 import Link from "next/link";
+import { RightLink } from "@/components/rights-network-provider";
 import { useState } from "react";
 import { SiteHeader } from "@/components/site-header";
 import { rightsCatalog, statusLabels } from "@/lib/rights-data";
@@ -42,7 +43,7 @@ function DashboardRightCard({ right }: { right: RightItem }) {
         <span className={`status status-${right.status}`}>{statusLabels[right.status]}</span>
         <span><Clock3 size={14} /> {right.sourceDate}</span>
       </div>
-      <h2>{right.title}</h2>
+      <h2><RightLink rightId={right.id} fallbackQuery={right.title} className="right-network-link">{right.title}</RightLink></h2>
       <p className="dashboard-card-summary">{right.summary}</p>
 
       <div className="next-step-panel">
@@ -137,3 +138,4 @@ export default function MyRightsPage() {
     </main>
   );
 }
+
