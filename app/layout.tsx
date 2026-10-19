@@ -3,9 +3,9 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "AEGORA — weet wat er voor jou geldt",
+  title: "AEGORA — de rechten van één mens raken ons allemaal",
   description:
-    "Een persoonlijk burgerplatform voor actuele rechten, cliëntpositie en controleerbare AI-antwoorden.",
+    "Aegora werkt aan onafhankelijk onderzoek en rechtsbescherming. Onze eerste focus: gesloten zorg, jeugdzorg en beschermd en begeleid wonen.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

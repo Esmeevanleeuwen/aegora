@@ -18,10 +18,17 @@ export function SiteHeader({ active = "home" }: SiteHeaderProps) {
         <BrandMark />
       </Link>
       <nav className={open ? "nav-open" : ""} aria-label="Hoofdnavigatie">
+        {active === "home" ? <>
+          <Link href="/#waarom" onClick={() => setOpen(false)}>Waarom Aegora</Link>
+          <Link href="/#onderzoek" onClick={() => setOpen(false)}>Onderzoek</Link>
+          <Link href="/#werking" onClick={() => setOpen(false)}>Onze werkwijze</Link>
+          <Link href="/rechten" onClick={() => setOpen(false)}>Alle rechten</Link>
+        </> : <>
         <Link aria-current={active === "library" ? "page" : undefined} href="/rechten" onClick={() => setOpen(false)}>Alle rechten</Link>
         <Link aria-current={active === "basics" ? "page" : undefined} href="/basisrechten" onClick={() => setOpen(false)}>Basisrechten</Link>
         <Link aria-current={active === "question" ? "page" : undefined} href="/vraag" onClick={() => setOpen(false)}>Vraag het de AI</Link>
-        <Link href="/#werking" onClick={() => setOpen(false)}>Hoe het werkt</Link>
+        <Link href="/#werking" onClick={() => setOpen(false)}>Onze werkwijze</Link>
+        </>}
       </nav>
       <Link className="overview-button" aria-current={active === "account" ? "page" : undefined} href="/account">
         <CircleUserRound size={17} /> Mijn account
