@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { BrandMark } from "@/components/brand-mark";
+import { MissionIntroduction, MissionParticipation, MissionResearch } from "@/components/home-mission";
+import styles from "@/components/home-mission.module.css";
 import { SiteHeader } from "@/components/site-header";
 import { publicSituations } from "@/lib/public-rights-data";
 import { domains, rightsCatalog, statusLabels } from "@/lib/rights-data";
@@ -192,16 +194,24 @@ export default function HomePage() {
   }
 
   return (
-    <main>
+    <main className={styles.page}>
       <SiteHeader />
 
-      <section className="hero" id="start">
-        <div className="hero-copy">
-          <span className="eyebrow"><span className="live-dot" /> Actuele officiële bronnen</span>
-          <h1>Weet waar je<br /><em>recht</em> op hebt.</h1>
+      <MissionIntroduction />
+      <MissionResearch />
+      <MissionParticipation />
+
+      <section className={styles.tools} id="hulpmiddelen" aria-labelledby="tools-title">
+        <div className={styles.toolsIntro}>
+          <span className={styles.eyebrow}>Zelf inzicht krijgen</span>
+          <h2 id="tools-title">Begin bij je vraag.<br />Verken je rechten.</h2>
           <p>
-            Algemene rechten voor iedereen, duidelijk uitgelegd per onderwerp, rol en situatie.
-            Zonder dat je eerst het juiste loket of wetsartikel hoeft te kennen.
+            Naast onderzoek biedt Aegora een eerste ingang naar informatie over rechten,
+            voorwaarden en mogelijke vervolgstappen. Je kunt zonder account beginnen.
+          </p>
+          <p>
+            Beschrijf je situatie zonder namen, dossiernummers of andere herkenbare gegevens.
+            Deze rechtencheck is geen inzending voor ons onderzoek.
           </p>
           <div className="trust-row">
             <span><Shield size={18} /> Bron vóór antwoord</span>
@@ -222,13 +232,13 @@ export default function HomePage() {
             id="question"
             value={question}
             onChange={(event) => setQuestion(event.target.value)}
-            placeholder="Bijvoorbeeld: mijn verhuurder herstelt een ernstig gebrek niet. Wat kan ik doen?"
+            placeholder="Bijvoorbeeld: welke rechten gelden bij huisregels in begeleid wonen?"
             minLength={10}
             maxLength={2500}
             required
           />
 
-          <div className="context-fields">
+          <div className={`context-fields ${styles.contextFields}`}>
             <label>
               <span>Rol of situatie</span>
               <select value={situation} onChange={(event) => setSituation(event.target.value)}>
@@ -275,7 +285,7 @@ export default function HomePage() {
 
           <button className="ask-button" type="submit" disabled={loading}>
             {loading ? <LoaderCircle className="spin" size={18} /> : <Sparkles size={18} />}
-            {loading ? "Bronnen en context controleren…" : "Vraag het aan RECHT NU"}
+            {loading ? "Bronnen en context controleren…" : "Vraag het aan Aegora"}
             {!loading && <ArrowRight size={18} />}
           </button>
           <p className="form-note"><LockKeyhole size={13} /> Pronouns veranderen alleen hoe we je aanspreken, niet welke rechten je krijgt.</p>
@@ -335,39 +345,10 @@ export default function HomePage() {
         ) : null}
       </section>
 
-      <section className="method-section" id="werking">
-        <div className="method-intro">
-          <span className="eyebrow">Geen losse chatbot</span>
-          <h2>Van vraag naar een<br />controleerbare vervolgstap.</h2>
-          <p>
-            De AI mag uitleggen en formuleren. De rechten, voorwaarden en bronnen komen uit
-            een beheerde kennislaag en blijven apart controleerbaar.
-          </p>
-        </div>
-        <ol className="method-steps">
-          <li><span>01</span><div><strong>Situatie</strong><p>Je beschrijft wat er gebeurde en kiest zelf relevante context.</p></div></li>
-          <li><span>02</span><div><strong>Bronnen</strong><p>Het systeem zoekt alleen in actuele, goedgekeurde bronversies.</p></div></li>
-          <li><span>03</span><div><strong>Toepassen</strong><p>Voorwaarden en uitzonderingen bepalen de zichtbare status.</p></div></li>
-          <li><span>04</span><div><strong>Handelen</strong><p>Je krijgt een concrete stap, bewijscheck of conceptbrief.</p></div></li>
-        </ol>
-      </section>
-
-      <section className="sources-section" id="bronnen">
-        <div>
-          <span className="eyebrow">Brontransparantie</span>
-          <h2>Geen bron,<br />geen stellige conclusie.</h2>
-        </div>
-        <div className="source-principles">
-          <article><Database /><strong>Versies blijven zichtbaar</strong><p>Een antwoord bewaart de gebruikte bronversie en controledatum.</p></article>
-          <article><CircleAlert /><strong>Onzekerheid is informatie</strong><p>Ontbrekende feiten en mogelijke uitzonderingen verdwijnen niet uit beeld.</p></article>
-          <article><LockKeyhole /><strong>Context blijft begrensd</strong><p>Pronouns, identiteit en juridische kenmerken krijgen ieder een eigen doel.</p></article>
-        </div>
-      </section>
-
-      <footer>
-        <a className="brand footer-brand" href="#start"><BrandMark /><span>RECHT NU</span></a>
-        <p>Een eerste werkende productbasis binnen de Aegora-repository.</p>
-        <a href="#vraag">Stel je vraag <ArrowRight size={15} /></a>
+      <footer className={styles.footer}>
+        <a className="brand footer-brand" href="#start" aria-label="Aegora, terug naar boven"><BrandMark /></a>
+        <p>Onafhankelijk onderzoek en rechtsbescherming. Omdat de rechten van één mens ons allemaal raken.</p>
+        <a href="#jouw-stem">Jouw stem telt <ArrowRight size={15} aria-hidden="true" /></a>
       </footer>
     </main>
   );
